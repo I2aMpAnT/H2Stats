@@ -1,6 +1,27 @@
 // Initialize empty games data array
 let gamesData = [];
 
+// Map images - Halo 2 multiplayer maps
+const mapImages = {
+    'Midship': 'https://www.halopedia.org/images/thumb/3/3d/HMCC_H2_Midship_Map.png/1200px-HMCC_H2_Midship_Map.png',
+    'Lockout': 'https://www.halopedia.org/images/thumb/4/4b/HMCC_H2_Lockout_Map.png/1200px-HMCC_H2_Lockout_Map.png',
+    'Sanctuary': 'https://www.halopedia.org/images/thumb/4/46/HMCC_H2_Sanctuary_Map.png/1200px-HMCC_H2_Sanctuary_Map.png',
+    'Warlock': 'https://www.halopedia.org/images/thumb/9/90/HMCC_H2_Warlock_Map.png/1200px-HMCC_H2_Warlock_Map.png',
+    'Beaver Creek': 'https://www.halopedia.org/images/thumb/8/83/HMCC_H2_Beaver_Creek_Map.png/1200px-HMCC_H2_Beaver_Creek_Map.png',
+    'Ascension': 'https://www.halopedia.org/images/thumb/b/bb/HMCC_H2_Ascension_Map.png/1200px-HMCC_H2_Ascension_Map.png',
+    'Coagulation': 'https://www.halopedia.org/images/thumb/d/d1/HMCC_H2_Coagulation_Map.png/1200px-HMCC_H2_Coagulation_Map.png',
+    'Zanzibar': 'https://www.halopedia.org/images/thumb/8/8d/HMCC_H2_Zanzibar_Map.png/1200px-HMCC_H2_Zanzibar_Map.png',
+    'Ivory Tower': 'https://www.halopedia.org/images/thumb/0/0e/HMCC_H2_Ivory_Tower_Map.png/1200px-HMCC_H2_Ivory_Tower_Map.png',
+    'Burial Mounds': 'https://www.halopedia.org/images/thumb/e/e3/HMCC_H2_Burial_Mounds_Map.png/1200px-HMCC_H2_Burial_Mounds_Map.png',
+    'Colossus': 'https://www.halopedia.org/images/thumb/c/cd/HMCC_H2_Colossus_Map.png/1200px-HMCC_H2_Colossus_Map.png',
+    'Headlong': 'https://www.halopedia.org/images/thumb/5/50/HMCC_H2_Headlong_Map.png/1200px-HMCC_H2_Headlong_Map.png',
+    'Waterworks': 'https://www.halopedia.org/images/thumb/4/43/HMCC_H2_Waterworks_Map.png/1200px-HMCC_H2_Waterworks_Map.png',
+    'Foundation': 'https://www.halopedia.org/images/thumb/9/91/HMCC_H2_Foundation_Map.png/1200px-HMCC_H2_Foundation_Map.png'
+};
+
+// Default map image if not found
+const defaultMapImage = 'https://www.halopedia.org/images/thumb/3/3d/HMCC_H2_Midship_Map.png/1200px-HMCC_H2_Midship_Map.png';
+
 // Initialize the page
 document.addEventListener('DOMContentLoaded', function() {
     loadGamesData();
@@ -229,7 +250,56 @@ function toggleGameDetails(gameNumber) {
 }
 
 function renderGameContent(game) {
-    let html = '<div class="tab-navigation">';
+    const mapName = game.details['Map Name'] || 'Unknown';
+    const mapImage = mapImages[mapName] || defaultMapImage;
+    const gameType = game.details['Variant Name'] || game.details['Game Type'] || 'Unknown';
+    const duration = game.details['Duration'] || '0:00';
+    const startTime = game.details['Start Time'] || '';
+    
+    // Calculate team scores
+    let teamScoreHtml = '';
+    const teams = {};
+    game.players.forEach(player => {
+        const team = player.team;
+        if (team && team !== 'None') {
+            if (!teams[team]) {
+                teams[team] = 0;
+            }
+            teams[team] += parseInt(player.score) || 0;
+        }
+    });
+    
+    if (Object.keys(teams).length > 0) {
+        const sortedTeams = Object.entries(teams).sort((a, b) => b[1] - a[1]);
+        teamScoreHtml = '<div class="game-final-score">';
+        sortedTeams.forEach(([team, score], index) => {
+            const teamClass = team.toLowerCase();
+            teamScoreHtml += `<span class="final-score-team team-${teamClass}">${team}: ${score}</span>`;
+            if (index < sortedTeams.length - 1) {
+                teamScoreHtml += '<span class="score-separator">vs</span>';
+            }
+        });
+        teamScoreHtml += '</div>';
+    }
+    
+    let html = '<div class="game-details-header">';
+    html += `<div class="map-image-container">`;
+    html += `<img src="${mapImage}" alt="${mapName}" class="map-image" onerror="this.src='${defaultMapImage}'">`;
+    html += `<div class="map-overlay">`;
+    html += `<div class="map-name">${mapName}</div>`;
+    html += `</div>`;
+    html += `</div>`;
+    html += `<div class="game-info-panel">`;
+    html += `<div class="game-type-title">${gameType}</div>`;
+    html += `<div class="game-meta-info">`;
+    html += `<span><i class="icon-clock"></i> ${duration}</span>`;
+    html += `<span><i class="icon-calendar"></i> ${startTime}</span>`;
+    html += `</div>`;
+    html += teamScoreHtml;
+    html += `</div>`;
+    html += '</div>';
+    
+    html += '<div class="tab-navigation">';
     html += '<button class="tab-btn active" onclick="switchGameTab(this, \'scoreboard\')">Scoreboard</button>';
     html += '<button class="tab-btn" onclick="switchGameTab(this, \'stats\')">Detailed Stats</button>';
     html += '<button class="tab-btn" onclick="switchGameTab(this, \'medals\')">Medals</button>';

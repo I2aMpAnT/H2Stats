@@ -345,6 +345,125 @@ header {
     border-left: 3px solid var(--shield-blue);
 }
 
+/* Game Details Header with Map Image */
+.game-details-header {
+    display: flex;
+    gap: 25px;
+    margin-bottom: 25px;
+    padding: 20px;
+    background: linear-gradient(135deg, rgba(15, 20, 35, 0.8), rgba(25, 35, 55, 0.8));
+    border: 1px solid rgba(0, 217, 255, 0.3);
+    border-radius: 8px;
+}
+
+.map-image-container {
+    position: relative;
+    width: 280px;
+    min-width: 280px;
+    height: 160px;
+    overflow: hidden;
+    border-radius: 6px;
+    border: 2px solid rgba(0, 217, 255, 0.4);
+    box-shadow: 0 0 20px rgba(0, 217, 255, 0.2);
+}
+
+.map-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.map-image-container:hover .map-image {
+    transform: scale(1.05);
+}
+
+.map-overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 10px 15px;
+    background: linear-gradient(transparent, rgba(0, 0, 0, 0.9));
+}
+
+.map-name {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--unsc-blue);
+    text-transform: uppercase;
+    text-shadow: 0 0 10px rgba(0, 217, 255, 0.5);
+}
+
+.game-info-panel {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.game-type-title {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 15px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+.game-meta-info {
+    display: flex;
+    gap: 25px;
+    margin-bottom: 15px;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 14px;
+    color: var(--text-secondary);
+}
+
+.game-meta-info span {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.game-final-score {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-top: 10px;
+}
+
+.final-score-team {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 24px;
+    font-weight: 700;
+    padding: 8px 20px;
+    border-radius: 4px;
+}
+
+.final-score-team.team-red {
+    background: rgba(220, 20, 60, 0.3);
+    border: 2px solid #dc143c;
+    color: #ff6b7a;
+    text-shadow: 0 0 10px rgba(220, 20, 60, 0.5);
+}
+
+.final-score-team.team-blue {
+    background: rgba(0, 191, 255, 0.3);
+    border: 2px solid #00bfff;
+    color: #7dd3ff;
+    text-shadow: 0 0 10px rgba(0, 191, 255, 0.5);
+}
+
+.score-separator {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 18px;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+}
+
 /* Tab Navigation */
 .tab-navigation {
     display: flex;
@@ -988,6 +1107,38 @@ header {
     .game-date {
         font-size: 12px;
         padding: 8px;
+    }
+
+    /* Mobile Game Details Header */
+    .game-details-header {
+        flex-direction: column;
+        gap: 15px;
+        padding: 15px;
+    }
+
+    .map-image-container {
+        width: 100%;
+        min-width: unset;
+        height: 140px;
+    }
+
+    .game-type-title {
+        font-size: 20px;
+    }
+
+    .game-meta-info {
+        flex-wrap: wrap;
+        gap: 15px;
+    }
+
+    .game-final-score {
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+
+    .final-score-team {
+        font-size: 18px;
+        padding: 6px 15px;
     }
 
     .tab-btn {
