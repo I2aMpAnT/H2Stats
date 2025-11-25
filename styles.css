@@ -362,7 +362,7 @@ header {
 }
 
 .team-score-blue {
-    color: #4db8ff;
+    color: #5599ff;
 }
 
 .score-vs {
@@ -416,8 +416,8 @@ header {
 }
 
 .sb-preview-row.team-blue {
-    background: rgba(0, 191, 255, 0.1);
-    border-left: 2px solid rgba(0, 191, 255, 0.5);
+    background: rgba(30, 80, 180, 0.2);
+    border-left: 2px solid rgba(50, 120, 220, 0.7);
 }
 
 .sb-preview-player {
@@ -575,10 +575,10 @@ header {
 }
 
 .final-score-team.team-blue {
-    background: rgba(0, 191, 255, 0.3);
-    border: 2px solid #00bfff;
-    color: #7dd3ff;
-    text-shadow: 0 0 10px rgba(0, 191, 255, 0.5);
+    background: rgba(30, 80, 180, 0.4);
+    border: 2px solid #3388ff;
+    color: #5599ff;
+    text-shadow: 0 0 10px rgba(50, 120, 220, 0.5);
 }
 
 .score-separator {
@@ -680,8 +680,8 @@ header {
 }
 
 .stats-table tr[data-team="Blue"] {
-    background: rgba(0, 191, 255, 0.15);
-    border-left: 3px solid #00bfff;
+    background: rgba(30, 80, 180, 0.25);
+    border-left: 3px solid #3388ff;
 }
 
 .stats-table tr[data-team="Red"]:hover {
@@ -689,7 +689,7 @@ header {
 }
 
 .stats-table tr[data-team="Blue"]:hover {
-    background: rgba(0, 191, 255, 0.25);
+    background: rgba(30, 80, 180, 0.35);
 }
 
 .stats-category {
@@ -833,9 +833,9 @@ header {
 }
 
 .team-blue {
-    background: rgba(0, 191, 255, 0.5);
-    border: 1px solid #00bfff;
-    color: #4dabff;
+    background: rgba(30, 80, 180, 0.5);
+    border: 1px solid #3388ff;
+    color: #5599ff;
 }
 
 .team-green {
@@ -857,8 +857,8 @@ header {
 }
 
 .scoreboard-row[data-team="Blue"] {
-    background: rgba(0, 191, 255, 0.25);
-    border-left: 4px solid #00bfff;
+    background: rgba(30, 80, 180, 0.3);
+    border-left: 4px solid #3388ff;
 }
 
 .scoreboard-row[data-team="Red"]:hover {
@@ -867,8 +867,8 @@ header {
 }
 
 .scoreboard-row[data-team="Blue"]:hover {
-    background: rgba(0, 191, 255, 0.40);
-    border-left: 6px solid #00d9ff;
+    background: rgba(30, 80, 180, 0.45);
+    border-left: 6px solid #5599ff;
 }
 
 .players-grid {
@@ -1531,8 +1531,8 @@ header {
 }
 
 .twitch-player-card.team-blue {
-    border-left: 3px solid rgba(0, 191, 255, 0.8);
-    background: linear-gradient(90deg, rgba(0, 191, 255, 0.1) 0%, var(--background-medium) 30%);
+    border-left: 3px solid rgba(50, 120, 220, 0.8);
+    background: linear-gradient(90deg, rgba(30, 80, 180, 0.2) 0%, var(--background-medium) 30%);
 }
 
 .twitch-player-header {
@@ -1935,8 +1935,8 @@ header {
 }
 
 .search-card-player.team-blue {
-    border-left: 2px solid rgba(0, 191, 255, 0.6);
-    background: rgba(0, 191, 255, 0.1);
+    border-left: 2px solid rgba(50, 120, 220, 0.7);
+    background: rgba(30, 80, 180, 0.2);
 }
 
 .search-card-player.highlighted {
