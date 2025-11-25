@@ -1,30 +1,40 @@
-// Tabs: activate panel on click
-document.addEventListener('DOMContentLoaded', () => {
-  const tabs = Array.from(document.querySelectorAll('.tab'));
-  const panels = Array.from(document.querySelectorAll('.tab-panel'));
+document.addEventListener("DOMContentLoaded", () => {
+  const historyDiv = document.getElementById("history");
+  const leaderboardDiv = document.getElementById("leaderboard");
+  const historyBtn = document.getElementById("historyBtn");
+  const leaderboardBtn = document.getElementById("leaderboardBtn");
 
-  function activateTab(name) {
-    tabs.forEach(t => t.classList.toggle('active', t.dataset.tab === name));
-    panels.forEach(p => p.classList.toggle('active', p.id === name));
-  }
-
-  tabs.forEach(tab => {
-    tab.addEventListener('click', () => {
-      activateTab(tab.dataset.tab);
-    });
+  // Show/hide sections
+  historyBtn.addEventListener("click", () => {
+    document.getElementById("game-history").style.display = "block";
+    document.getElementById("leaderboard-section").style.display = "none";
   });
 
-  // Default active (ensure correct state on load)
-  activateTab('history');
-});
+  leaderboardBtn.addEventListener("click", () => {
+    document.getElementById("game-history").style.display = "none";
+    document.getElementById("leaderboard-section").style.display = "block";
+  });
 
-// Modal helpers (placeholder for future integration)
-function openPlayerModal(playerName, statsHtml) {
-  const modal = document.getElementById('playerModal');
-  document.getElementById('modalPlayerName').textContent = playerName || '';
-  document.getElementById('modalPlayerStats').innerHTML = statsHtml || '';
-  modal.hidden = false;
-}
-function closePlayerModal() {
-  document.getElementById('playerModal').hidden = true;
-}
+  // Fetch and render game history
+  fetch("GameJSON/GameHistory.json")
+    .then((res) => res.json())
+    .then((data) => {
+      historyDiv.textContent = JSON.stringify(data, null, 2);
+    })
+    .catch((err) => {
+      historyDiv.textContent = "Error loading game history: " + err;
+    });
+
+  // Fetch and render leaderboard
+  fetch("GameJSON/Leaderboard.json")
+    .then((res) => res.json())
+    .then((data) => {
+      leaderboardDiv.textContent = JSON.stringify(data, null, 2);
+    })
+    .catch((err) => {
+      leaderboardDiv.textContent = "Error loading leaderboard: " + err;
+    });
+
+  // Init: show history by default
+  historyBtn.click();
+});
