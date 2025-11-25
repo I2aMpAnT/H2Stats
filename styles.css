@@ -56,6 +56,7 @@ header {
     position: relative;
     overflow: hidden;
     animation: fadeInDown 0.8s ease-out;
+    background: transparent;
 }
 
 .logo {
@@ -63,7 +64,12 @@ header {
     height: auto;
     margin: 0 auto 10px;
     display: block;
-    filter: drop-shadow(0 0 20px rgba(0, 217, 255, 0.5));
+    background: transparent;
+    filter: 
+        drop-shadow(0 0 8px rgba(0, 150, 255, 1))
+        drop-shadow(0 0 20px rgba(0, 120, 255, 0.9))
+        drop-shadow(0 0 40px rgba(0, 100, 255, 0.6))
+        drop-shadow(0 0 60px rgba(0, 80, 255, 0.4));
 }
 
 .subtitle {
