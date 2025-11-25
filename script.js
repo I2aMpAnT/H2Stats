@@ -632,22 +632,28 @@ function renderLeaderboard() {
         return parseFloat(b.kd) - parseFloat(a.kd);
     });
     
+    // Randomly assign ranks 1-50 to players
+    const availableRanks = Array.from({length: 50}, (_, i) => i + 1);
+    // Shuffle the ranks
+    for (let i = availableRanks.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [availableRanks[i], availableRanks[j]] = [availableRanks[j], availableRanks[i]];
+    }
+    
     let html = '<div class="leaderboard">';
     html += '<div class="leaderboard-header">';
     html += '<div>Rank</div>';
-    html += '<div>Level</div>';
     html += '<div>Player</div>';
     html += '<div>Record</div>';
     html += '<div>K/D</div>';
     html += '</div>';
     
     players.forEach((player, index) => {
-        const rank = index + 1;
-        const rankClass = rank <= 3 ? `rank-${rank}` : '';
+        const randomRank = availableRanks[index % availableRanks.length];
+        const rankIconUrl = `https://r2-cdn.insignia.live/h2-rank/${randomRank}.png`;
         
         html += '<div class="leaderboard-row" onclick="openPlayerModal(\'' + player.name + '\')">';
-        html += `<div class="lb-rank ${rankClass}">${rank}</div>`;
-        html += `<div class="lb-level"><div class="level-badge"></div></div>`;
+        html += `<div class="lb-rank"><img src="${rankIconUrl}" alt="Rank ${randomRank}" class="rank-icon" /></div>`;
         html += `<div class="lb-player">${player.name}</div>`;
         html += `<div class="lb-record">${player.wins}-${player.games - player.wins} (${player.winrate}%)</div>`;
         html += `<div class="lb-kd">${player.kd}</div>`;
