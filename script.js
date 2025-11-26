@@ -297,17 +297,32 @@ function createGameItem(game, gameNumber) {
         }
     });
     
-    // If there are teams, show the scores
+    // Determine winner
+    let winnerClass = '';
     if (Object.keys(teams).length > 0) {
-        const teamScores = Object.entries(teams)
-            .sort((a, b) => b[1] - a[1]) // Sort by score descending
+        // Team game - find winning team
+        const sortedTeams = Object.entries(teams).sort((a, b) => b[1] - a[1]);
+        if (sortedTeams.length > 0 && sortedTeams[0][1] > 0) {
+            const winningTeam = sortedTeams[0][0].toLowerCase();
+            if (sortedTeams.length === 1 || sortedTeams[0][1] > sortedTeams[1][1]) {
+                winnerClass = `winner-${winningTeam}`;
+            }
+        }
+        
+        const teamScores = sortedTeams
             .map(([team, score]) => `${team}: ${score}`)
             .join(' - ');
         teamScoreDisplay = `<span class="game-meta-tag">${teamScores}</span>`;
+    } else {
+        // FFA game - find winner by place
+        const winner = players.find(p => p.place === '1st');
+        if (winner) {
+            winnerClass = 'winner-ffa';
+        }
     }
     
     gameDiv.innerHTML = `
-        <div class="game-header-bar" onclick="toggleGameDetails(${gameNumber})" style="--map-bg: url('${mapImage}')">
+        <div class="game-header-bar ${winnerClass}" onclick="toggleGameDetails(${gameNumber})" style="--map-bg: url('${mapImage}')">
             <div class="game-header-left">
                 <div class="game-number">${displayGameType}</div>
                 <div class="game-info">
