@@ -193,6 +193,13 @@ function formatDateTime(startTime) {
     return startTime;
 }
 
+// Helper function to check if team is valid (not none/null/empty)
+function isValidTeam(team) {
+    if (!team) return false;
+    const t = team.toString().toLowerCase().trim();
+    return t !== '' && t !== 'none' && t !== 'null' && t !== 'undefined';
+}
+
 // Generate random ranks for all players
 function generatePlayerRanks() {
     const allPlayers = new Set();
@@ -400,11 +407,12 @@ function createGameItem(game, gameNumber) {
     const teams = {};
     players.forEach(player => {
         const team = player.team;
-        if (team && team !== 'None' && team !== 'none' && team !== '') {
-            if (!teams[team]) {
-                teams[team] = 0;
+        if (isValidTeam(team)) {
+            const teamKey = team.toString().trim();
+            if (!teams[teamKey]) {
+                teams[teamKey] = 0;
             }
-            teams[team] += parseInt(player.score) || 0;
+            teams[teamKey] += parseInt(player.score) || 0;
         }
     });
     
@@ -413,7 +421,7 @@ function createGameItem(game, gameNumber) {
     let scoreTagClass = '';
     
     if (Object.keys(teams).length > 1) {
-        // Team game - find winning team
+        // Team game - find winning team (need at least 2 different teams)
         const sortedTeams = Object.entries(teams).sort((a, b) => b[1] - a[1]);
         if (sortedTeams.length > 0 && sortedTeams[0][1] > 0) {
             const winningTeam = sortedTeams[0][0].toLowerCase();
@@ -455,7 +463,7 @@ function createGameItem(game, gameNumber) {
         </div>
         <div class="game-details">
             <div class="game-details-content">
-                <div class="game-date">${details['Start Time'] || 'Unknown Date'}</div>
+                <div class="game-date">${dateDisplay || 'Unknown Date'}</div>
                 <div id="game-content-${gameNumber}"></div>
             </div>
         </div>
@@ -502,17 +510,18 @@ function renderGameContent(game) {
     
     game.players.forEach(player => {
         const team = player.team;
-        if (team && team !== 'None' && team !== 'none' && team !== '') {
+        if (isValidTeam(team)) {
             hasRealTeams = true;
-            if (!teams[team]) {
-                teams[team] = 0;
+            const teamKey = team.toString().trim();
+            if (!teams[teamKey]) {
+                teams[teamKey] = 0;
             }
-            teams[team] += parseInt(player.score) || 0;
+            teams[teamKey] += parseInt(player.score) || 0;
         }
     });
     
-    if (hasRealTeams && Object.keys(teams).length > 0) {
-        // Team game - show team scores
+    if (hasRealTeams && Object.keys(teams).length > 1) {
+        // Team game - show team scores (need at least 2 teams)
         const sortedTeams = Object.entries(teams).sort((a, b) => b[1] - a[1]);
         teamScoreHtml = '<div class="game-final-score">';
         sortedTeams.forEach(([team, score], index) => {
@@ -531,7 +540,7 @@ function renderGameContent(game) {
             const winner = sortedPlayers[0];
             teamScoreHtml = '<div class="game-final-score ffa-winner">';
             teamScoreHtml += `<span class="winner-label">WINNER:</span> `;
-            teamScoreHtml += `<span class="winner-name">${winner.name}</span>`;
+            teamScoreHtml += `<span class="winner-name clickable-player" data-player="${winner.name}">${winner.name}</span>`;
             teamScoreHtml += `<span class="winner-score">${winner.score || 0} pts</span>`;
             teamScoreHtml += '</div>';
         }
@@ -612,7 +621,7 @@ function renderScoreboard(game) {
     const players = game.players;
     const details = game.details;
     const gameType = (details['Game Type'] || '').toLowerCase();
-    const hasTeams = players.some(p => p.team && p.team !== 'none');
+    const hasTeams = players.some(p => isValidTeam(p.team));
     
     // Sort players: Red team first, then Blue team
     const sortedPlayers = [...players];
@@ -642,10 +651,10 @@ function renderScoreboard(game) {
     
     // Rows
     sortedPlayers.forEach(player => {
-        const teamAttr = player.team && player.team !== 'none' ? `data-team="${player.team}"` : '';
+        const teamAttr = isValidTeam(player.team) ? `data-team="${player.team}"` : '';
         html += `<div class="scoreboard-row" ${teamAttr} style="grid-template-columns: ${gridTemplate}">`;
         
-        html += `<div class="sb-player">`;
+        html += `<div class="sb-player clickable-player" data-player="${player.name}">`;
         html += getPlayerRankIcon(player.name, 'small');
         html += `<span class="player-name-text">${player.name}</span>`;
         html += `</div>`;
@@ -665,7 +674,7 @@ function renderScoreboard(game) {
 
 function renderPVP(game) {
     const players = game.players;
-    const hasTeams = players.some(p => p.team && p.team !== 'none');
+    const hasTeams = players.some(p => isValidTeam(p.team));
     
     // Sort players by team (Red first) then by score
     const sortedPlayers = [...players].sort((a, b) => {
@@ -682,7 +691,6 @@ function renderPVP(game) {
     const numPlayers = playerNames.length;
     
     // Generate kill matrix - distribute each player's kills across opponents
-    // Use a seeded approach based on player names for consistency
     const killMatrix = {};
     
     sortedPlayers.forEach(killer => {
@@ -692,7 +700,7 @@ function renderPVP(game) {
         // Get valid targets (in team games, only enemies; in FFA, everyone else)
         let targets = sortedPlayers.filter(p => {
             if (p.name === killer.name) return false;
-            if (hasTeams && p.team === killer.team) return false;
+            if (hasTeams && isValidTeam(p.team) && isValidTeam(killer.team) && p.team === killer.team) return false;
             return true;
         });
         
@@ -703,7 +711,7 @@ function renderPVP(game) {
             return;
         }
         
-        // Distribute kills weighted by target's deaths (more deaths = more likely to be killed)
+        // Distribute kills weighted by target's deaths
         const totalTargetDeaths = targets.reduce((sum, t) => sum + (t.deaths || 1), 0);
         let remainingKills = totalKills;
         
@@ -711,10 +719,9 @@ function renderPVP(game) {
             const weight = (target.deaths || 1) / totalTargetDeaths;
             let kills;
             if (idx === targets.length - 1) {
-                kills = remainingKills; // Give remaining to last target
+                kills = remainingKills;
             } else {
                 kills = Math.floor(totalKills * weight);
-                // Add some variance using a simple hash
                 const hash = (killer.name.charCodeAt(0) + target.name.charCodeAt(0)) % 3 - 1;
                 kills = Math.max(0, kills + hash);
                 kills = Math.min(kills, remainingKills);
@@ -735,25 +742,27 @@ function renderPVP(game) {
     let html = '<div class="pvp-matrix">';
     
     // Calculate column width based on number of players
-    const colWidth = Math.max(60, Math.min(100, 600 / numPlayers));
+    const colWidth = Math.max(70, Math.min(100, 700 / numPlayers));
     const gridCols = `180px repeat(${numPlayers}, ${colWidth}px)`;
     
     // Header row with player names as columns
     html += `<div class="pvp-header" style="display: grid; grid-template-columns: ${gridCols};">`;
-    html += '<div class="pvp-corner">KILLER \\ VICTIM</div>';
+    html += '<div class="pvp-corner">KILLER → VICTIM</div>';
     sortedPlayers.forEach(player => {
-        const teamClass = player.team ? player.team.toLowerCase() : '';
-        html += `<div class="pvp-col-header ${teamClass}" title="${player.name}">${truncateName(player.name, 8)}</div>`;
+        const teamClass = isValidTeam(player.team) ? player.team.toLowerCase() : '';
+        // Show abbreviated name consistently - first 7 chars or full name if shorter
+        const displayName = player.name.length > 7 ? player.name.substring(0, 7) : player.name;
+        html += `<div class="pvp-col-header ${teamClass} clickable-player" data-player="${player.name}" title="${player.name}">${displayName}</div>`;
     });
     html += '</div>';
     
     // Data rows
     sortedPlayers.forEach(killer => {
-        const teamClass = killer.team ? killer.team.toLowerCase() : '';
+        const teamClass = isValidTeam(killer.team) ? killer.team.toLowerCase() : '';
         html += `<div class="pvp-row ${teamClass}" style="display: grid; grid-template-columns: ${gridCols};">`;
         
         // Row header (killer name)
-        html += `<div class="pvp-row-header">`;
+        html += `<div class="pvp-row-header clickable-player" data-player="${killer.name}">`;
         html += getPlayerRankIcon(killer.name, 'small');
         html += `<span class="player-name-text">${killer.name}</span>`;
         html += `</div>`;
@@ -762,7 +771,7 @@ function renderPVP(game) {
         sortedPlayers.forEach(victim => {
             const kills = killMatrix[killer.name][victim.name] || 0;
             const isSelf = killer.name === victim.name;
-            const isTeammate = hasTeams && killer.team === victim.team && !isSelf;
+            const isTeammate = hasTeams && isValidTeam(killer.team) && isValidTeam(victim.team) && killer.team === victim.team && !isSelf;
             
             let cellClass = 'pvp-cell';
             if (isSelf) {
@@ -770,7 +779,6 @@ function renderPVP(game) {
             } else if (isTeammate) {
                 cellClass += ' pvp-teammate';
             } else if (kills > 0) {
-                // Color intensity based on kills
                 if (kills >= 10) cellClass += ' pvp-hot';
                 else if (kills >= 5) cellClass += ' pvp-warm';
                 else cellClass += ' pvp-cool';
@@ -957,7 +965,7 @@ function renderMedals(game) {
         const teamAttr = team ? `data-team="${team}"` : '';
         
         html += `<div class="medals-row" ${teamAttr}>`;
-        html += `<div class="medals-player-col">`;
+        html += `<div class="medals-player-col clickable-player" data-player="${playerMedals.player}">`;
         html += getPlayerRankIcon(playerMedals.player, 'small');
         html += `<span class="player-name-text">${playerMedals.player}</span>`;
         html += `</div>`;
@@ -1056,7 +1064,7 @@ function renderAccuracy(game) {
         const headshotPercent = totalHit > 0 ? ((totalHeadshots / totalHit) * 100).toFixed(0) : '0';
         
         html += `<div class="accuracy-row" ${teamAttr}>`;
-        html += `<div class="accuracy-player-col">`;
+        html += `<div class="accuracy-player-col clickable-player" data-player="${playerName}">`;
         html += getPlayerRankIcon(playerName, 'small');
         html += `<span class="player-name-text">${playerName}</span>`;
         html += `</div>`;
@@ -1113,7 +1121,7 @@ function renderWeapons(game) {
         const teamAttr = team ? `data-team="${team}"` : '';
         
         html += `<div class="weapons-row" ${teamAttr}>`;
-        html += `<div class="weapons-player-col">`;
+        html += `<div class="weapons-player-col clickable-player" data-player="${playerName}">`;
         html += getPlayerRankIcon(playerName, 'small');
         html += `<span class="player-name-text">${playerName}</span>`;
         html += `</div>`;
@@ -1174,10 +1182,10 @@ function renderTwitch(game) {
     
     players.forEach(player => {
         const team = player.team;
-        const teamClass = team && team !== 'none' ? `team-${team.toLowerCase()}` : '';
+        const teamClass = isValidTeam(team) ? `team-${team.toLowerCase()}` : '';
         
         html += `<div class="twitch-player-card ${teamClass}">`;
-        html += `<div class="twitch-player-header">`;
+        html += `<div class="twitch-player-header clickable-player" data-player="${player.name}">`;
         html += getPlayerRankIcon(player.name, 'small');
         html += `<span class="twitch-player-name">${player.name}</span>`;
         html += `</div>`;
@@ -1258,7 +1266,7 @@ function renderLeaderboard() {
     players.forEach((player) => {
         const rankIconUrl = `https://r2-cdn.insignia.live/h2-rank/${player.rank}.png`;
         
-        html += '<div class="leaderboard-row" onclick="openPlayerModal(\'' + player.name + '\')">';
+        html += '<div class="leaderboard-row clickable-player" data-player="' + player.name + '">';
         html += `<div class="lb-rank"><img src="${rankIconUrl}" alt="Rank ${player.rank}" class="rank-icon" /></div>`;
         html += `<div class="lb-player">${player.name}</div>`;
         html += `<div class="lb-record">${player.wins}-${player.games - player.wins} (${player.winrate}%)</div>`;
@@ -2016,10 +2024,330 @@ function escapeHtml(text) {
     return text.replace(/[&<>"']/g, m => map[m]);
 }
 
-// Close modal when clicking outside
+// ==================== PLAYER PROFILE FUNCTIONS ====================
+
+let currentProfilePlayer = null;
+let currentProfileGames = [];
+
+function openPlayerProfile(playerName) {
+    currentProfilePlayer = playerName;
+    
+    // Hide other sections
+    document.getElementById('statsArea').style.display = 'none';
+    document.getElementById('searchResultsPage').style.display = 'none';
+    document.getElementById('playerProfilePage').style.display = 'block';
+    
+    // Set player name and rank
+    document.getElementById('profilePlayerName').textContent = playerName;
+    document.getElementById('profileRankIcon').innerHTML = getPlayerRankIcon(playerName, 'large');
+    
+    // Calculate overall stats
+    const stats = calculatePlayerOverallStats(playerName);
+    renderProfileStats(stats);
+    
+    // Get player's games
+    currentProfileGames = getPlayerGames(playerName);
+    
+    // Populate filter dropdowns
+    populateProfileFilters();
+    
+    // Render games list
+    renderProfileGames(currentProfileGames);
+}
+
+function closePlayerProfile() {
+    document.getElementById('playerProfilePage').style.display = 'none';
+    document.getElementById('statsArea').style.display = 'block';
+    currentProfilePlayer = null;
+    currentProfileGames = [];
+}
+
+function calculatePlayerOverallStats(playerName) {
+    let games = 0, wins = 0, kills = 0, deaths = 0, assists = 0, totalScore = 0;
+    
+    gamesData.forEach(game => {
+        const player = game.players.find(p => p.name === playerName);
+        if (player) {
+            games++;
+            kills += player.kills || 0;
+            deaths += player.deaths || 0;
+            assists += player.assists || 0;
+            totalScore += parseInt(player.score) || 0;
+            
+            // Check if player won
+            const hasTeams = game.players.some(p => isValidTeam(p.team));
+            if (hasTeams && isValidTeam(player.team)) {
+                const teams = {};
+                game.players.forEach(p => {
+                    if (isValidTeam(p.team)) {
+                        teams[p.team] = (teams[p.team] || 0) + (parseInt(p.score) || 0);
+                    }
+                });
+                const sortedTeams = Object.entries(teams).sort((a, b) => b[1] - a[1]);
+                if (sortedTeams[0] && sortedTeams[0][0] === player.team) wins++;
+            } else {
+                // FFA - check if highest score
+                const maxScore = Math.max(...game.players.map(p => parseInt(p.score) || 0));
+                if ((parseInt(player.score) || 0) === maxScore) wins++;
+            }
+        }
+    });
+    
+    return {
+        games,
+        wins,
+        losses: games - wins,
+        winRate: games > 0 ? ((wins / games) * 100).toFixed(1) : 0,
+        kills,
+        deaths,
+        assists,
+        kd: deaths > 0 ? (kills / deaths).toFixed(2) : kills.toFixed(2),
+        kpg: games > 0 ? (kills / games).toFixed(1) : 0,
+        dpg: games > 0 ? (deaths / games).toFixed(1) : 0,
+        totalScore,
+        avgScore: games > 0 ? Math.round(totalScore / games) : 0
+    };
+}
+
+function renderProfileStats(stats) {
+    const container = document.getElementById('profileOverallStats');
+    container.innerHTML = `
+        <div class="profile-stat-card">
+            <div class="stat-value">${stats.games}</div>
+            <div class="stat-label">Games</div>
+        </div>
+        <div class="profile-stat-card">
+            <div class="stat-value">${stats.wins}</div>
+            <div class="stat-label">Wins</div>
+        </div>
+        <div class="profile-stat-card">
+            <div class="stat-value">${stats.winRate}%</div>
+            <div class="stat-label">Win Rate</div>
+        </div>
+        <div class="profile-stat-card">
+            <div class="stat-value">${stats.kills}</div>
+            <div class="stat-label">Total Kills</div>
+        </div>
+        <div class="profile-stat-card">
+            <div class="stat-value">${stats.deaths}</div>
+            <div class="stat-label">Total Deaths</div>
+        </div>
+        <div class="profile-stat-card highlight">
+            <div class="stat-value">${stats.kd}</div>
+            <div class="stat-label">K/D Ratio</div>
+        </div>
+        <div class="profile-stat-card">
+            <div class="stat-value">${stats.kpg}</div>
+            <div class="stat-label">Kills/Game</div>
+        </div>
+        <div class="profile-stat-card">
+            <div class="stat-value">${stats.avgScore}</div>
+            <div class="stat-label">Avg Score</div>
+        </div>
+    `;
+}
+
+function getPlayerGames(playerName) {
+    return gamesData.filter(game => 
+        game.players.some(p => p.name === playerName)
+    ).map((game, idx) => ({
+        ...game,
+        originalIndex: gamesData.indexOf(game),
+        playerData: game.players.find(p => p.name === playerName)
+    }));
+}
+
+function populateProfileFilters() {
+    const maps = new Set();
+    const gametypes = new Set();
+    
+    currentProfileGames.forEach(game => {
+        const mapName = game.details['Map Name'];
+        const gameType = game.details['Variant Name'] || game.details['Game Type'];
+        if (mapName) maps.add(mapName);
+        if (gameType) gametypes.add(gameType);
+    });
+    
+    const mapSelect = document.getElementById('profileFilterMap');
+    mapSelect.innerHTML = '<option value="">All Maps</option>';
+    [...maps].sort().forEach(map => {
+        mapSelect.innerHTML += `<option value="${map}">${map}</option>`;
+    });
+    
+    const typeSelect = document.getElementById('profileFilterGametype');
+    typeSelect.innerHTML = '<option value="">All Game Types</option>';
+    [...gametypes].sort().forEach(type => {
+        typeSelect.innerHTML += `<option value="${type}">${type}</option>`;
+    });
+}
+
+function sortPlayerGames() {
+    const sortBy = document.getElementById('profileSortBy').value;
+    let games = [...currentProfileGames];
+    
+    switch(sortBy) {
+        case 'date-desc':
+            games.sort((a, b) => new Date(b.details['Start Time'] || 0) - new Date(a.details['Start Time'] || 0));
+            break;
+        case 'date-asc':
+            games.sort((a, b) => new Date(a.details['Start Time'] || 0) - new Date(b.details['Start Time'] || 0));
+            break;
+        case 'map':
+            games.sort((a, b) => (a.details['Map Name'] || '').localeCompare(b.details['Map Name'] || ''));
+            break;
+        case 'gametype':
+            games.sort((a, b) => (a.details['Variant Name'] || '').localeCompare(b.details['Variant Name'] || ''));
+            break;
+        case 'score':
+            games.sort((a, b) => (b.playerData?.score || 0) - (a.playerData?.score || 0));
+            break;
+        case 'kills':
+            games.sort((a, b) => (b.playerData?.kills || 0) - (a.playerData?.kills || 0));
+            break;
+    }
+    
+    filterPlayerGames(games);
+}
+
+function filterPlayerGames(preFilteredGames = null) {
+    let games = preFilteredGames || [...currentProfileGames];
+    
+    const mapFilter = document.getElementById('profileFilterMap').value;
+    const typeFilter = document.getElementById('profileFilterGametype').value;
+    
+    if (mapFilter) {
+        games = games.filter(g => g.details['Map Name'] === mapFilter);
+    }
+    if (typeFilter) {
+        games = games.filter(g => (g.details['Variant Name'] || g.details['Game Type']) === typeFilter);
+    }
+    
+    renderProfileGames(games);
+}
+
+function renderProfileGames(games) {
+    const container = document.getElementById('profileGamesList');
+    container.innerHTML = '';
+    
+    games.forEach((game, idx) => {
+        const gameNumber = game.originalIndex + 1;
+        const gameDiv = createGameItem(game, gameNumber);
+        container.appendChild(gameDiv);
+    });
+    
+    if (games.length === 0) {
+        container.innerHTML = '<div class="no-games">No games found matching filters</div>';
+    }
+}
+
+// ==================== MAIN PAGE SORTING FUNCTIONS ====================
+
+function populateMainFilters() {
+    const maps = new Set();
+    const gametypes = new Set();
+    
+    gamesData.forEach(game => {
+        const mapName = game.details['Map Name'];
+        const gameType = game.details['Variant Name'] || game.details['Game Type'];
+        if (mapName) maps.add(mapName);
+        if (gameType) gametypes.add(gameType);
+    });
+    
+    const mapSelect = document.getElementById('filterMap');
+    if (mapSelect) {
+        mapSelect.innerHTML = '<option value="">All Maps</option>';
+        [...maps].sort().forEach(map => {
+            mapSelect.innerHTML += `<option value="${map}">${map}</option>`;
+        });
+    }
+    
+    const typeSelect = document.getElementById('filterGametype');
+    if (typeSelect) {
+        typeSelect.innerHTML = '<option value="">All Game Types</option>';
+        [...gametypes].sort().forEach(type => {
+            typeSelect.innerHTML += `<option value="${type}">${type}</option>`;
+        });
+    }
+}
+
+function sortGames() {
+    const sortBy = document.getElementById('sortBy').value;
+    let games = [...gamesData];
+    
+    switch(sortBy) {
+        case 'date-desc':
+            games.sort((a, b) => new Date(b.details['Start Time'] || 0) - new Date(a.details['Start Time'] || 0));
+            break;
+        case 'date-asc':
+            games.sort((a, b) => new Date(a.details['Start Time'] || 0) - new Date(b.details['Start Time'] || 0));
+            break;
+        case 'map':
+            games.sort((a, b) => (a.details['Map Name'] || '').localeCompare(b.details['Map Name'] || ''));
+            break;
+        case 'gametype':
+            games.sort((a, b) => (a.details['Variant Name'] || '').localeCompare(b.details['Variant Name'] || ''));
+            break;
+    }
+    
+    filterGames(games);
+}
+
+function filterGames(preFilteredGames = null) {
+    let games = preFilteredGames || [...gamesData];
+    
+    const mapFilter = document.getElementById('filterMap')?.value;
+    const typeFilter = document.getElementById('filterGametype')?.value;
+    
+    if (mapFilter) {
+        games = games.filter(g => g.details['Map Name'] === mapFilter);
+    }
+    if (typeFilter) {
+        games = games.filter(g => (g.details['Variant Name'] || g.details['Game Type']) === typeFilter);
+    }
+    
+    renderFilteredGames(games);
+}
+
+function renderFilteredGames(games) {
+    const container = document.getElementById('gamesList');
+    container.innerHTML = '';
+    
+    games.forEach((game, idx) => {
+        const originalIndex = gamesData.indexOf(game);
+        const gameNumber = originalIndex + 1;
+        const gameDiv = createGameItem(game, gameNumber);
+        container.appendChild(gameDiv);
+    });
+    
+    if (games.length === 0) {
+        container.innerHTML = '<div class="no-games">No games found matching filters</div>';
+    }
+}
+
+// ==================== CLICKABLE PLAYER EVENT DELEGATION ====================
+
 document.addEventListener('click', function(e) {
+    // Handle clickable player elements
+    const clickablePlayer = e.target.closest('.clickable-player');
+    if (clickablePlayer) {
+        const playerName = clickablePlayer.dataset.player;
+        if (playerName) {
+            e.preventDefault();
+            e.stopPropagation();
+            openPlayerProfile(playerName);
+        }
+    }
+    
+    // Handle modal close
     const modal = document.getElementById('playerModal');
     if (modal && e.target === modal) {
         closePlayerModal();
     }
 });
+
+// Initialize filters after data loads
+const originalDisplayGames = displayGames;
+displayGames = function() {
+    originalDisplayGames();
+    populateMainFilters();
+};

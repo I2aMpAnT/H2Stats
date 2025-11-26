@@ -2747,3 +2747,245 @@ header {
         font-size: 20px;
     }
 }
+
+/* ==================== CLICKABLE PLAYERS ==================== */
+.clickable-player {
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.clickable-player:hover {
+    color: var(--unsc-blue);
+    text-shadow: 0 0 10px rgba(0, 217, 255, 0.5);
+}
+
+.clickable-player:hover .player-name-text {
+    color: var(--unsc-blue);
+    text-decoration: underline;
+}
+
+.pvp-col-header.clickable-player:hover {
+    background: rgba(0, 217, 255, 0.1);
+}
+
+/* ==================== SORTING CONTROLS ==================== */
+.sort-controls {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 20px;
+    padding: 15px 20px;
+    background: rgba(15, 20, 35, 0.8);
+    border: 1px solid rgba(0, 217, 255, 0.2);
+    flex-wrap: wrap;
+}
+
+.sort-label {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 14px;
+    color: var(--text-secondary);
+    font-weight: 600;
+}
+
+.sort-select {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 14px;
+    padding: 8px 12px;
+    background: var(--background-dark);
+    border: 1px solid rgba(0, 217, 255, 0.3);
+    color: var(--text-primary);
+    cursor: pointer;
+    min-width: 150px;
+}
+
+.sort-select:hover {
+    border-color: var(--unsc-blue);
+}
+
+.sort-select:focus {
+    outline: none;
+    border-color: var(--unsc-blue);
+    box-shadow: 0 0 10px rgba(0, 217, 255, 0.2);
+}
+
+.sort-select option {
+    background: var(--background-dark);
+    color: var(--text-primary);
+}
+
+/* ==================== PLAYER PROFILE PAGE ==================== */
+.player-profile-page {
+    padding: 20px 0;
+}
+
+.profile-header {
+    display: flex;
+    align-items: center;
+    gap: 30px;
+    margin-bottom: 30px;
+    padding-bottom: 20px;
+    border-bottom: 2px solid rgba(0, 217, 255, 0.3);
+}
+
+.profile-player-info {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.profile-rank {
+    display: flex;
+    align-items: center;
+}
+
+.profile-rank img {
+    width: 80px;
+    height: 80px;
+}
+
+.profile-name {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 36px;
+    font-weight: 700;
+    color: var(--text-primary);
+    text-shadow: 0 0 20px rgba(0, 217, 255, 0.3);
+    margin: 0;
+}
+
+.profile-stats-section {
+    margin-bottom: 40px;
+}
+
+.profile-overall-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 15px;
+}
+
+.profile-stat-card {
+    background: rgba(15, 20, 35, 0.8);
+    border: 1px solid rgba(0, 217, 255, 0.2);
+    padding: 20px;
+    text-align: center;
+    transition: all 0.3s ease;
+}
+
+.profile-stat-card:hover {
+    border-color: rgba(0, 217, 255, 0.5);
+    box-shadow: 0 0 20px rgba(0, 217, 255, 0.1);
+}
+
+.profile-stat-card.highlight {
+    border-color: var(--unsc-blue);
+    background: rgba(0, 217, 255, 0.1);
+}
+
+.profile-stat-card .stat-value {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--unsc-blue);
+    margin-bottom: 5px;
+}
+
+.profile-stat-card.highlight .stat-value {
+    color: #00ff88;
+    text-shadow: 0 0 15px rgba(0, 255, 136, 0.5);
+}
+
+.profile-stat-card .stat-label {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 12px;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.profile-games-section {
+    margin-top: 30px;
+}
+
+.profile-games-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+.profile-games-header h2 {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 20px;
+    color: var(--unsc-blue);
+    margin: 0;
+}
+
+.profile-games-header .sort-controls {
+    margin-bottom: 0;
+    padding: 10px 15px;
+}
+
+.no-games {
+    text-align: center;
+    padding: 40px;
+    color: var(--text-secondary);
+    font-size: 16px;
+}
+
+/* Back button styling */
+.back-btn {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    padding: 10px 20px;
+    background: transparent;
+    border: 1px solid rgba(0, 217, 255, 0.4);
+    color: var(--unsc-blue);
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.back-btn:hover {
+    background: rgba(0, 217, 255, 0.1);
+    border-color: var(--unsc-blue);
+    box-shadow: 0 0 15px rgba(0, 217, 255, 0.3);
+}
+
+/* Responsive adjustments for profile page */
+@media (max-width: 768px) {
+    .profile-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .profile-player-info {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+    
+    .profile-name {
+        font-size: 24px;
+    }
+    
+    .profile-rank img {
+        width: 60px;
+        height: 60px;
+    }
+    
+    .profile-games-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .sort-controls {
+        width: 100%;
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .sort-select {
+        width: 100%;
+    }
+}

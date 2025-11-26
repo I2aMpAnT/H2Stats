@@ -36,6 +36,23 @@
             </div>
 
             <div id="main-tab-gamehistory" class="main-tab-content" style="display: block;">
+                <!-- Sorting Controls -->
+                <div class="sort-controls">
+                    <span class="sort-label">Sort by:</span>
+                    <select id="sortBy" class="sort-select" onchange="sortGames()">
+                        <option value="date-desc">Date (Newest)</option>
+                        <option value="date-asc">Date (Oldest)</option>
+                        <option value="map">Map</option>
+                        <option value="gametype">Game Type</option>
+                    </select>
+                    <span class="sort-label">Filter:</span>
+                    <select id="filterMap" class="sort-select" onchange="filterGames()">
+                        <option value="">All Maps</option>
+                    </select>
+                    <select id="filterGametype" class="sort-select" onchange="filterGames()">
+                        <option value="">All Game Types</option>
+                    </select>
+                </div>
                 <div class="game-list" id="gamesList"></div>
             </div>
 
@@ -69,9 +86,47 @@
             </div>
             <div id="searchResultsContent"></div>
         </div>
+
+        <!-- Player Profile Page -->
+        <div id="playerProfilePage" class="player-profile-page" style="display: none;">
+            <div class="profile-header">
+                <button class="back-btn" onclick="closePlayerProfile()">← Back</button>
+                <div class="profile-player-info">
+                    <div id="profileRankIcon" class="profile-rank"></div>
+                    <h1 id="profilePlayerName" class="profile-name"></h1>
+                </div>
+            </div>
+            <div class="profile-stats-section">
+                <div id="profileOverallStats" class="profile-overall-stats"></div>
+            </div>
+            <div class="profile-games-section">
+                <div class="profile-games-header">
+                    <h2>Recent Games</h2>
+                    <div class="sort-controls">
+                        <span class="sort-label">Sort by:</span>
+                        <select id="profileSortBy" class="sort-select" onchange="sortPlayerGames()">
+                            <option value="date-desc">Date (Newest)</option>
+                            <option value="date-asc">Date (Oldest)</option>
+                            <option value="map">Map</option>
+                            <option value="gametype">Game Type</option>
+                            <option value="score">Score</option>
+                            <option value="kills">Kills</option>
+                        </select>
+                        <span class="sort-label">Filter:</span>
+                        <select id="profileFilterMap" class="sort-select" onchange="filterPlayerGames()">
+                            <option value="">All Maps</option>
+                        </select>
+                        <select id="profileFilterGametype" class="sort-select" onchange="filterPlayerGames()">
+                            <option value="">All Game Types</option>
+                        </select>
+                    </div>
+                </div>
+                <div id="profileGamesList" class="game-list"></div>
+            </div>
+        </div>
     </div>
 
-    <!-- Player Stats Modal -->
+    <!-- Player Stats Modal (legacy, keeping for compatibility) -->
     <div id="playerModal" class="modal">
         <div class="modal-content">
             <span class="modal-close" onclick="closePlayerModal()">&times;</span>
