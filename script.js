@@ -87,32 +87,40 @@ const medalIcons = {
     'bomb_carrier_kill': 'https://halo.wiki.gallery/images/3/3f/H2V_Achievement_Bomb_Carrier_Kill.png'
 };
 
-// Weapon icons from StrategyWiki
+// Weapon icons from halo.wiki.gallery - H2 weapon thumbnails
 const weaponIcons = {
-    'battle rifle': 'https://cdn.wikimg.net/en/strategywiki/images/thumb/4/4e/Halo_2_BR.jpg/300px-Halo_2_BR.jpg',
-    'br': 'https://cdn.wikimg.net/en/strategywiki/images/thumb/4/4e/Halo_2_BR.jpg/300px-Halo_2_BR.jpg',
-    'magnum': 'https://cdn.wikimg.net/en/strategywiki/images/thumb/9/99/Halo_2_Magnum.jpg/300px-Halo_2_Magnum.jpg',
-    'pistol': 'https://cdn.wikimg.net/en/strategywiki/images/thumb/9/99/Halo_2_Magnum.jpg/300px-Halo_2_Magnum.jpg',
-    'shotgun': 'https://cdn.wikimg.net/en/strategywiki/images/thumb/c/c8/Halo_2_Shotgun.jpg/300px-Halo_2_Shotgun.jpg',
-    'plasma pistol': 'https://cdn.wikimg.net/en/strategywiki/images/thumb/1/11/Halo_2_Plasma_Pistol.jpg/300px-Halo_2_Plasma_Pistol.jpg',
-    'smg': 'https://cdn.wikimg.net/en/strategywiki/images/thumb/4/40/Halo_2_SMG.jpg/300px-Halo_2_SMG.jpg',
-    'sub machine gun': 'https://cdn.wikimg.net/en/strategywiki/images/thumb/4/40/Halo_2_SMG.jpg/300px-Halo_2_SMG.jpg',
-    'brute shot': 'https://cdn.wikimg.net/en/strategywiki/images/thumb/8/80/Halo_2_BS.jpg/300px-Halo_2_BS.jpg',
-    'carbine': 'https://cdn.wikimg.net/en/strategywiki/images/thumb/d/d4/Halo_2_Carbine.jpg/300px-Halo_2_Carbine.jpg',
-    'plasma rifle': 'https://cdn.wikimg.net/en/strategywiki/images/thumb/c/c4/Halo_2_Plasma_Rifle.jpg/300px-Halo_2_Plasma_Rifle.jpg',
-    'sniper rifle': 'https://cdn.wikimg.net/en/strategywiki/images/thumb/5/5d/Halo_2_sniper.jpg/300px-Halo_2_sniper.jpg',
-    'sniper': 'https://cdn.wikimg.net/en/strategywiki/images/thumb/5/5d/Halo_2_sniper.jpg/300px-Halo_2_sniper.jpg',
-    'rocket launcher': 'https://cdn.wikimg.net/en/strategywiki/images/thumb/7/7b/Halo_2_rocket.jpg/300px-Halo_2_rocket.jpg',
-    'rockets': 'https://cdn.wikimg.net/en/strategywiki/images/thumb/7/7b/Halo_2_rocket.jpg/300px-Halo_2_rocket.jpg',
-    'energy sword': 'https://cdn.wikimg.net/en/strategywiki/images/thumb/a/a9/Halo_2_sword.jpg/300px-Halo_2_sword.jpg',
-    'sword': 'https://cdn.wikimg.net/en/strategywiki/images/thumb/a/a9/Halo_2_sword.jpg/300px-Halo_2_sword.jpg',
-    'needler': 'https://cdn.wikimg.net/en/strategywiki/images/thumb/e/ec/Halo_2_needler.jpg/300px-Halo_2_needler.jpg',
-    'beam rifle': 'https://cdn.wikimg.net/en/strategywiki/images/thumb/b/b5/Halo_2_beam.jpg/300px-Halo_2_beam.jpg',
-    'sentinel beam': 'https://cdn.wikimg.net/en/strategywiki/images/thumb/f/f1/Halo_2_sentinel.jpg/300px-Halo_2_sentinel.jpg',
-    'frag grenade': 'https://cdn.wikimg.net/en/strategywiki/images/thumb/3/3e/Halo_2_frag.jpg/300px-Halo_2_frag.jpg',
-    'grenade': 'https://cdn.wikimg.net/en/strategywiki/images/thumb/3/3e/Halo_2_frag.jpg/300px-Halo_2_frag.jpg',
-    'plasma grenade': 'https://cdn.wikimg.net/en/strategywiki/images/thumb/5/5a/Halo_2_plasma_nade.jpg/300px-Halo_2_plasma_nade.jpg',
-    'melee': 'https://cdn.wikimg.net/en/strategywiki/images/thumb/9/99/Halo_2_Magnum.jpg/300px-Halo_2_Magnum.jpg'
+    // UNSC Weapons
+    'battle rifle': 'https://halo.wiki.gallery/images/thumb/2/29/H2_BR55_Battle_Rifle.png/250px-H2_BR55_Battle_Rifle.png',
+    'br': 'https://halo.wiki.gallery/images/thumb/2/29/H2_BR55_Battle_Rifle.png/250px-H2_BR55_Battle_Rifle.png',
+    'magnum': 'https://halo.wiki.gallery/images/thumb/3/31/H2_M6C_Magnum_Pistol.png/224px-H2_M6C_Magnum_Pistol.png',
+    'pistol': 'https://halo.wiki.gallery/images/thumb/3/31/H2_M6C_Magnum_Pistol.png/224px-H2_M6C_Magnum_Pistol.png',
+    'shotgun': 'https://halo.wiki.gallery/images/thumb/9/9a/H2_M90_Shotgun.png/300px-H2_M90_Shotgun.png',
+    'smg': 'https://halo.wiki.gallery/images/thumb/3/3a/H2_M7_SMG.png/300px-H2_M7_SMG.png',
+    'sub machine gun': 'https://halo.wiki.gallery/images/thumb/3/3a/H2_M7_SMG.png/300px-H2_M7_SMG.png',
+    'sniper rifle': 'https://halo.wiki.gallery/images/thumb/6/67/H2_SRS99C-S2_AM_Sniper_Rifle.png/300px-H2_SRS99C-S2_AM_Sniper_Rifle.png',
+    'sniper': 'https://halo.wiki.gallery/images/thumb/6/67/H2_SRS99C-S2_AM_Sniper_Rifle.png/300px-H2_SRS99C-S2_AM_Sniper_Rifle.png',
+    'rocket launcher': 'https://halo.wiki.gallery/images/thumb/7/7d/H2_M19_SSM_Rocket_Launcher.png/300px-H2_M19_SSM_Rocket_Launcher.png',
+    'rockets': 'https://halo.wiki.gallery/images/thumb/7/7d/H2_M19_SSM_Rocket_Launcher.png/300px-H2_M19_SSM_Rocket_Launcher.png',
+    'frag grenade': 'https://halo.wiki.gallery/images/thumb/e/e9/H2_M9_Fragmentation_Grenade.png/200px-H2_M9_Fragmentation_Grenade.png',
+    'grenade': 'https://halo.wiki.gallery/images/thumb/e/e9/H2_M9_Fragmentation_Grenade.png/200px-H2_M9_Fragmentation_Grenade.png',
+    
+    // Covenant Weapons
+    'plasma pistol': 'https://halo.wiki.gallery/images/thumb/f/f4/H2_Plasma_Pistol.png/250px-H2_Plasma_Pistol.png',
+    'plasma rifle': 'https://halo.wiki.gallery/images/thumb/5/51/H2_Plasma_Rifle.png/300px-H2_Plasma_Rifle.png',
+    'brute plasma rifle': 'https://halo.wiki.gallery/images/thumb/5/54/H2_Brute_Plasma_Rifle.png/300px-H2_Brute_Plasma_Rifle.png',
+    'carbine': 'https://halo.wiki.gallery/images/thumb/e/e8/H2_Type-51_Carbine.png/300px-H2_Type-51_Carbine.png',
+    'covenant carbine': 'https://halo.wiki.gallery/images/thumb/e/e8/H2_Type-51_Carbine.png/300px-H2_Type-51_Carbine.png',
+    'needler': 'https://halo.wiki.gallery/images/thumb/6/64/H2_Type-33_Needler.png/250px-H2_Type-33_Needler.png',
+    'beam rifle': 'https://halo.wiki.gallery/images/thumb/e/e3/H2_Beam_Rifle.png/300px-H2_Beam_Rifle.png',
+    'particle beam rifle': 'https://halo.wiki.gallery/images/thumb/e/e3/H2_Beam_Rifle.png/300px-H2_Beam_Rifle.png',
+    'brute shot': 'https://halo.wiki.gallery/images/thumb/c/c3/H2_Brute_Shot.png/300px-H2_Brute_Shot.png',
+    'energy sword': 'https://halo.wiki.gallery/images/thumb/a/a1/H2_Energy_Sword.png/250px-H2_Energy_Sword.png',
+    'sword': 'https://halo.wiki.gallery/images/thumb/a/a1/H2_Energy_Sword.png/250px-H2_Energy_Sword.png',
+    'plasma grenade': 'https://halo.wiki.gallery/images/thumb/6/61/H2_Plasma_Grenade.png/200px-H2_Plasma_Grenade.png',
+    
+    // Other
+    'sentinel beam': 'https://halo.wiki.gallery/images/thumb/2/24/H2_Sentinel_Beam.png/300px-H2_Sentinel_Beam.png',
+    'melee': 'https://halo.wiki.gallery/images/thumb/3/31/H2_M6C_Magnum_Pistol.png/224px-H2_M6C_Magnum_Pistol.png'
 };
 
 // Helper function to get weapon icon
