@@ -36,48 +36,55 @@ const mapImages = {
 // Default map image if not found
 const defaultMapImage = 'mapimages/Midship.jpeg';
 
-// Medal icons - Original Halo 2 medals (23 total)
-// Using local files - these need transparent backgrounds
+// Medal icons - Original Halo 2 Vista medals (23 total)
+// Using transparent H2V Achievement icons from Halopedia
 const medalIcons = {
     // Multi-kills (within 4 seconds)
-    'double_kill': 'h2icons/Double Kill.bmp',
-    'triple_kill': 'h2icons/Triple Kill.bmp',
-    'killtacular': 'h2icons/Killtacular.bmp',
-    'kill_frenzy': 'h2icons/Kill Frenzy.bmp',
-    'killtrocity': 'h2icons/Killtrocity.bmp',
-    'killamanjaro': 'h2icons/Killamanjaro.bmp',
-    'killimanjaro': 'h2icons/Killamanjaro.bmp',
+    'double_kill': 'https://halo.wiki.gallery/images/9/94/H2V_Achievement_Double_Kill.png',
+    'triple_kill': 'https://halo.wiki.gallery/images/6/63/H2V_Achievement_Triple_Kill.png',
+    'killtacular': 'https://halo.wiki.gallery/images/e/e9/H2V_Achievement_Killtacular.png',
+    'killing_frenzy': 'https://halo.wiki.gallery/images/4/4f/H2V_Achievement_Killing_Frenzy.png',
+    'kill_frenzy': 'https://halo.wiki.gallery/images/4/4f/H2V_Achievement_Killing_Frenzy.png',
+    'killtrocity': 'https://halo.wiki.gallery/images/2/2e/H2V_Achievement_Killtrocity.png',
+    'killamanjaro': 'https://halo.wiki.gallery/images/3/39/H2V_Achievement_Killimanjaro.png',
+    'killimanjaro': 'https://halo.wiki.gallery/images/3/39/H2V_Achievement_Killimanjaro.png',
     
     // Spree medals (kills without dying)
-    'killing_spree': 'h2icons/Killing Spree.bmp',
-    'running_riot': 'h2icons/Running Riot.bmp',
-    'rampage': 'h2icons/Rampage.bmp',
-    'berserker': 'h2icons/Berserker.bmp',
-    'overkill': 'h2icons/Overkill.bmp',
+    'killing_spree': 'https://halo.wiki.gallery/images/f/f5/H2V_Achievement_Killing_Spree.png',
+    'running_riot': 'https://halo.wiki.gallery/images/1/14/H2V_Achievement_Running_Riot.png',
+    'rampage': 'https://halo.wiki.gallery/images/a/a8/H2V_Achievement_Rampage.png',
+    'untouchable': 'https://halo.wiki.gallery/images/c/c2/H2V_Achievement_Untouchable.png',
+    'berserker': 'https://halo.wiki.gallery/images/c/c2/H2V_Achievement_Untouchable.png',
+    'overkill': 'https://halo.wiki.gallery/images/8/8e/H2V_Achievement_Overkill.png',
     
     // Special kills
-    'assassin': 'h2icons/Assassin.bmp',
-    'assassination': 'h2icons/Assassin.bmp',
-    'bonecracker': 'h2icons/Bonecracker.bmp',
-    'bone_cracker': 'h2icons/Bonecracker.bmp',
-    'pummel': 'h2icons/Bonecracker.bmp',
-    'sniper_kill': 'h2icons/Sniper Kill.bmp',
-    'sniper': 'h2icons/Sniper Kill.bmp',
-    'stick_it': 'h2icons/Stick It.bmp',
-    'stick': 'h2icons/Stick It.bmp',
-    'roadkill': 'h2icons/Roadkill.bmp',
-    'splatter': 'h2icons/Roadkill.bmp',
-    'carjacking': 'h2icons/Carjacking.bmp',
+    'beat_down': 'https://halo.wiki.gallery/images/6/6f/H2V_Achievement_Beat_Down.png',
+    'beatdown': 'https://halo.wiki.gallery/images/6/6f/H2V_Achievement_Beat_Down.png',
+    'bone_cracker': 'https://halo.wiki.gallery/images/4/4c/H2V_Achievement_Bone_Cracker.png',
+    'bonecracker': 'https://halo.wiki.gallery/images/4/4c/H2V_Achievement_Bone_Cracker.png',
+    'pummel': 'https://halo.wiki.gallery/images/4/4c/H2V_Achievement_Bone_Cracker.png',
+    'assassin': 'https://halo.wiki.gallery/images/4/4c/H2V_Achievement_Bone_Cracker.png',
+    'assassination': 'https://halo.wiki.gallery/images/4/4c/H2V_Achievement_Bone_Cracker.png',
+    'sniper_kill': 'https://halo.wiki.gallery/images/0/0d/H2V_Achievement_Sniper_Kill.png',
+    'sniper': 'https://halo.wiki.gallery/images/0/0d/H2V_Achievement_Sniper_Kill.png',
+    'grenade_stick': 'https://halo.wiki.gallery/images/0/02/H2V_Achievement_Grenade_Stick.png',
+    'stick_it': 'https://halo.wiki.gallery/images/0/02/H2V_Achievement_Grenade_Stick.png',
+    'stick': 'https://halo.wiki.gallery/images/0/02/H2V_Achievement_Grenade_Stick.png',
+    'splatter': 'https://halo.wiki.gallery/images/1/1f/H2V_Achievement_Splatter.png',
+    'roadkill': 'https://halo.wiki.gallery/images/1/1f/H2V_Achievement_Splatter.png',
+    'hijack': 'https://halo.wiki.gallery/images/f/f9/H2V_Achievement_Carjacking.png',
+    'carjacking': 'https://halo.wiki.gallery/images/f/f9/H2V_Achievement_Carjacking.png',
     
     // Flag objectives
-    'flag_taken': 'h2icons/Flag Taken.bmp',
-    'flag_captured': 'h2icons/Flag Captured.bmp',
-    'flag_returned': 'h2icons/Flag Returned.bmp',
-    'flag_carrier_kill': 'h2icons/Flag Carrier Kill.bmp',
+    'flag_taken': 'https://halo.wiki.gallery/images/c/c5/H2V_Achievement_Flag_Taken.png',
+    'flag_score': 'https://halo.wiki.gallery/images/7/7f/H2V_Achievement_Flag_Score.png',
+    'flag_captured': 'https://halo.wiki.gallery/images/7/7f/H2V_Achievement_Flag_Score.png',
+    'flag_returned': 'https://halo.wiki.gallery/images/e/e3/H2V_Achievement_Flag_Returned.png',
+    'flag_carrier_kill': 'https://halo.wiki.gallery/images/5/5c/H2V_Achievement_Flag_Carrier_Kill.png',
     
     // Bomb objectives
-    'bomb_planted': 'h2icons/Bomb Planted.bmp',
-    'bomb_carrier_kill': 'h2icons/Bomb Carrier Kill.bmp'
+    'bomb_planted': 'https://halo.wiki.gallery/images/6/6c/H2V_Achievement_Bomb_Planted.png',
+    'bomb_carrier_kill': 'https://halo.wiki.gallery/images/3/3f/H2V_Achievement_Bomb_Carrier_Kill.png'
 };
 
 // Weapon icons from StrategyWiki
@@ -315,6 +322,23 @@ function createGameItem(game, gameNumber) {
     let displayGameType = details['Variant Name'] || details['Game Type'] || 'Unknown';
     let mapName = details['Map Name'] || 'Unknown Map';
     let duration = details['Duration'] || '0:00';
+    let startTime = details['Start Time'] || '';
+    
+    // Format date/time for display (shorter version)
+    let dateDisplay = '';
+    if (startTime) {
+        // Try to extract just date portion or format nicely
+        const dateMatch = startTime.match(/(\d{1,2}\/\d{1,2}\/\d{2,4})/);
+        const timeMatch = startTime.match(/(\d{1,2}:\d{2}(?::\d{2})?\s*(?:AM|PM)?)/i);
+        if (dateMatch) {
+            dateDisplay = dateMatch[1];
+            if (timeMatch) {
+                dateDisplay += ' ' + timeMatch[1];
+            }
+        } else {
+            dateDisplay = startTime;
+        }
+    }
     
     // Get map image for background
     const mapImage = mapImages[mapName] || defaultMapImage;
@@ -368,6 +392,8 @@ function createGameItem(game, gameNumber) {
             <div class="game-header-left">
                 <div class="game-number">${displayGameType}</div>
                 <div class="game-info">
+                    <span class="game-meta-tag game-num-tag">Game ${gameNumber}</span>
+                    ${dateDisplay ? `<span class="game-meta-tag date-tag">${dateDisplay}</span>` : ''}
                     <span class="game-meta-tag">${mapName}</span>
                     <span class="game-meta-tag">${duration}</span>
                     ${teamScoreDisplay}
@@ -729,19 +755,14 @@ function renderMedals(game) {
         Object.entries(playerMedals).forEach(([medalKey, count]) => {
             if (medalKey === 'player' || count === 0) return;
             
-            hasMedals = true;
             const iconPath = getMedalIcon(medalKey);
             const medalName = formatMedalName(medalKey);
             
+            // Only display medals we have icons for (skip unknown medals)
             if (iconPath) {
+                hasMedals = true;
                 html += `<div class="medal-badge" title="${medalName}">`;
                 html += `<img src="${iconPath}" alt="${medalName}" class="medal-icon">`;
-                html += `<span class="medal-count">x${count}</span>`;
-                html += `</div>`;
-            } else {
-                // Fallback for unknown medals - show ? icon with tooltip
-                html += `<div class="medal-badge medal-unknown" title="${medalName}">`;
-                html += `<span class="medal-placeholder">?</span>`;
                 html += `<span class="medal-count">x${count}</span>`;
                 html += `</div>`;
             }
