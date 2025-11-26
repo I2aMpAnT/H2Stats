@@ -1500,16 +1500,15 @@ header {
     display: inline-flex;
     align-items: center;
     gap: 4px;
-    background: rgba(0, 0, 0, 0.4);
+    background: transparent;
     padding: 4px 8px;
     border-radius: 4px;
-    border: 1px solid rgba(255, 255, 255, 0.15);
+    border: none;
     transition: all 0.2s ease;
 }
 
 .medal-badge:hover {
-    background: rgba(0, 217, 255, 0.2);
-    border-color: rgba(0, 217, 255, 0.5);
+    background: rgba(0, 217, 255, 0.15);
     transform: translateY(-2px);
 }
 
@@ -1517,13 +1516,15 @@ header {
     width: 24px;
     height: 24px;
     object-fit: contain;
+    filter: drop-shadow(0 0 2px rgba(0, 217, 255, 0.5));
 }
 
 .medal-count {
     font-family: 'Orbitron', sans-serif;
     font-size: 12px;
     font-weight: 700;
-    color: var(--warning-orange);
+    color: var(--unsc-blue);
+    text-shadow: 0 0 6px rgba(0, 217, 255, 0.6);
 }
 
 .medal-unknown {
