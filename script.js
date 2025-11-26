@@ -36,90 +36,90 @@ const mapImages = {
 // Default map image if not found
 const defaultMapImage = 'mapimages/Midship.jpeg';
 
-// Medal icons - Original Halo 2 Vista medals (23 total)
-// Using transparent H2V Achievement icons from Halopedia
+// Medal icons - Original Halo 2 medals
+// Using H2 medal images from halo.wiki.gallery
 const medalIcons = {
     // Multi-kills (within 4 seconds)
     'double_kill': 'https://halo.wiki.gallery/images/9/94/H2V_Achievement_Double_Kill.png',
-    'triple_kill': 'https://halo.wiki.gallery/images/6/63/H2V_Achievement_Triple_Kill.png',
-    'killtacular': 'https://halo.wiki.gallery/images/e/e9/H2V_Achievement_Killtacular.png',
-    'killing_frenzy': 'https://halo.wiki.gallery/images/4/4f/H2V_Achievement_Killing_Frenzy.png',
-    'kill_frenzy': 'https://halo.wiki.gallery/images/4/4f/H2V_Achievement_Killing_Frenzy.png',
-    'killtrocity': 'https://halo.wiki.gallery/images/2/2e/H2V_Achievement_Killtrocity.png',
-    'killamanjaro': 'https://halo.wiki.gallery/images/3/39/H2V_Achievement_Killimanjaro.png',
-    'killimanjaro': 'https://halo.wiki.gallery/images/3/39/H2V_Achievement_Killimanjaro.png',
+    'triple_kill': 'https://halo.wiki.gallery/images/4/4e/H2V_Achievement_Triple_Kill.png',
+    'killtacular': 'https://halo.wiki.gallery/images/a/ab/H2V_Achievement_Killtacular.png',
+    'killing_frenzy': 'https://halo.wiki.gallery/images/c/ca/H2V_Achievement_Killing_Frenzy.png',
+    'kill_frenzy': 'https://halo.wiki.gallery/images/c/ca/H2V_Achievement_Killing_Frenzy.png',
+    'killtrocity': 'https://halo.wiki.gallery/images/3/36/H2V_Achievement_Killtrocity.png',
+    'killamanjaro': 'https://halo.wiki.gallery/images/0/05/H2V_Achievement_Killimanjaro.png',
+    'killimanjaro': 'https://halo.wiki.gallery/images/0/05/H2V_Achievement_Killimanjaro.png',
     
     // Spree medals (kills without dying)
-    'killing_spree': 'https://halo.wiki.gallery/images/f/f5/H2V_Achievement_Killing_Spree.png',
-    'running_riot': 'https://halo.wiki.gallery/images/1/14/H2V_Achievement_Running_Riot.png',
-    'rampage': 'https://halo.wiki.gallery/images/a/a8/H2V_Achievement_Rampage.png',
-    'untouchable': 'https://halo.wiki.gallery/images/c/c2/H2V_Achievement_Untouchable.png',
-    'berserker': 'https://halo.wiki.gallery/images/c/c2/H2V_Achievement_Untouchable.png',
-    'overkill': 'https://halo.wiki.gallery/images/8/8e/H2V_Achievement_Overkill.png',
+    'killing_spree': 'https://halo.wiki.gallery/images/e/e5/H2V_Achievement_Killing_Spree.png',
+    'running_riot': 'https://halo.wiki.gallery/images/9/90/H2V_Achievement_Running_Riot.png',
+    'rampage': 'https://halo.wiki.gallery/images/8/89/H2V_Achievement_Rampage.png',
+    'untouchable': 'https://halo.wiki.gallery/images/f/f5/H2V_Achievement_Untouchable.png',
+    'berserker': 'https://halo.wiki.gallery/images/f/f5/H2V_Achievement_Untouchable.png',
+    'overkill': 'https://halo.wiki.gallery/images/f/f2/H2V_Achievement_Overkill.png',
     
     // Special kills
-    'beat_down': 'https://halo.wiki.gallery/images/6/6f/H2V_Achievement_Beat_Down.png',
-    'beatdown': 'https://halo.wiki.gallery/images/6/6f/H2V_Achievement_Beat_Down.png',
-    'bone_cracker': 'https://halo.wiki.gallery/images/4/4c/H2V_Achievement_Bone_Cracker.png',
-    'bonecracker': 'https://halo.wiki.gallery/images/4/4c/H2V_Achievement_Bone_Cracker.png',
-    'pummel': 'https://halo.wiki.gallery/images/4/4c/H2V_Achievement_Bone_Cracker.png',
-    'assassin': 'https://halo.wiki.gallery/images/4/4c/H2V_Achievement_Bone_Cracker.png',
-    'assassination': 'https://halo.wiki.gallery/images/4/4c/H2V_Achievement_Bone_Cracker.png',
-    'sniper_kill': 'https://halo.wiki.gallery/images/0/0d/H2V_Achievement_Sniper_Kill.png',
-    'sniper': 'https://halo.wiki.gallery/images/0/0d/H2V_Achievement_Sniper_Kill.png',
-    'grenade_stick': 'https://halo.wiki.gallery/images/0/02/H2V_Achievement_Grenade_Stick.png',
-    'stick_it': 'https://halo.wiki.gallery/images/0/02/H2V_Achievement_Grenade_Stick.png',
-    'stick': 'https://halo.wiki.gallery/images/0/02/H2V_Achievement_Grenade_Stick.png',
-    'splatter': 'https://halo.wiki.gallery/images/1/1f/H2V_Achievement_Splatter.png',
-    'roadkill': 'https://halo.wiki.gallery/images/1/1f/H2V_Achievement_Splatter.png',
-    'hijack': 'https://halo.wiki.gallery/images/f/f9/H2V_Achievement_Carjacking.png',
-    'carjacking': 'https://halo.wiki.gallery/images/f/f9/H2V_Achievement_Carjacking.png',
+    'beat_down': 'https://halo.wiki.gallery/images/d/d3/H2V_Achievement_Beat_Down.png',
+    'beatdown': 'https://halo.wiki.gallery/images/d/d3/H2V_Achievement_Beat_Down.png',
+    'bone_cracker': 'https://halo.wiki.gallery/images/8/8b/H2V_Achievement_Bone_Cracker.png',
+    'bonecracker': 'https://halo.wiki.gallery/images/8/8b/H2V_Achievement_Bone_Cracker.png',
+    'pummel': 'https://halo.wiki.gallery/images/8/8b/H2V_Achievement_Bone_Cracker.png',
+    'assassin': 'https://halo.wiki.gallery/images/8/8b/H2V_Achievement_Bone_Cracker.png',
+    'assassination': 'https://halo.wiki.gallery/images/8/8b/H2V_Achievement_Bone_Cracker.png',
+    'sniper_kill': 'https://halo.wiki.gallery/images/0/02/H2V_Achievement_Sniper_Kill.png',
+    'sniper': 'https://halo.wiki.gallery/images/0/02/H2V_Achievement_Sniper_Kill.png',
+    'grenade_stick': 'https://halo.wiki.gallery/images/6/66/H2V_Achievement_Grenade_Stick.png',
+    'stick_it': 'https://halo.wiki.gallery/images/6/66/H2V_Achievement_Grenade_Stick.png',
+    'stick': 'https://halo.wiki.gallery/images/6/66/H2V_Achievement_Grenade_Stick.png',
+    'splatter': 'https://halo.wiki.gallery/images/a/a9/H2V_Achievement_Splatter.png',
+    'roadkill': 'https://halo.wiki.gallery/images/a/a9/H2V_Achievement_Splatter.png',
+    'hijack': 'https://halo.wiki.gallery/images/3/34/H2V_Achievement_Carjacking.png',
+    'carjacking': 'https://halo.wiki.gallery/images/3/34/H2V_Achievement_Carjacking.png',
     
     // Flag objectives
-    'flag_taken': 'https://halo.wiki.gallery/images/c/c5/H2V_Achievement_Flag_Taken.png',
-    'flag_score': 'https://halo.wiki.gallery/images/7/7f/H2V_Achievement_Flag_Score.png',
-    'flag_captured': 'https://halo.wiki.gallery/images/7/7f/H2V_Achievement_Flag_Score.png',
-    'flag_returned': 'https://halo.wiki.gallery/images/e/e3/H2V_Achievement_Flag_Returned.png',
-    'flag_carrier_kill': 'https://halo.wiki.gallery/images/5/5c/H2V_Achievement_Flag_Carrier_Kill.png',
+    'flag_taken': 'https://halo.wiki.gallery/images/3/3e/H2V_Achievement_Flag_Taken.png',
+    'flag_score': 'https://halo.wiki.gallery/images/2/26/H2V_Achievement_Flag_Score.png',
+    'flag_captured': 'https://halo.wiki.gallery/images/2/26/H2V_Achievement_Flag_Score.png',
+    'flag_returned': 'https://halo.wiki.gallery/images/0/04/H2V_Achievement_Flag_Returned.png',
+    'flag_carrier_kill': 'https://halo.wiki.gallery/images/0/04/H2V_Achievement_Flag_Carrier_Kill.png',
     
     // Bomb objectives
-    'bomb_planted': 'https://halo.wiki.gallery/images/6/6c/H2V_Achievement_Bomb_Planted.png',
-    'bomb_carrier_kill': 'https://halo.wiki.gallery/images/3/3f/H2V_Achievement_Bomb_Carrier_Kill.png'
+    'bomb_planted': 'https://halo.wiki.gallery/images/a/a7/H2V_Achievement_Bomb_Planted.png',
+    'bomb_carrier_kill': 'https://halo.wiki.gallery/images/3/30/H2V_Achievement_Bomb_Carrier_Kill.png'
 };
 
 // Weapon icons from halo.wiki.gallery - H2 weapon thumbnails
 const weaponIcons = {
     // UNSC Weapons
-    'battle rifle': 'https://halo.wiki.gallery/images/thumb/2/29/H2_BR55_Battle_Rifle.png/250px-H2_BR55_Battle_Rifle.png',
-    'br': 'https://halo.wiki.gallery/images/thumb/2/29/H2_BR55_Battle_Rifle.png/250px-H2_BR55_Battle_Rifle.png',
+    'battle rifle': 'https://halo.wiki.gallery/images/thumb/2/29/H2A_BattleRifle.png/300px-H2A_BattleRifle.png',
+    'br': 'https://halo.wiki.gallery/images/thumb/2/29/H2A_BattleRifle.png/300px-H2A_BattleRifle.png',
     'magnum': 'https://halo.wiki.gallery/images/thumb/3/31/H2_M6C_Magnum_Pistol.png/224px-H2_M6C_Magnum_Pistol.png',
     'pistol': 'https://halo.wiki.gallery/images/thumb/3/31/H2_M6C_Magnum_Pistol.png/224px-H2_M6C_Magnum_Pistol.png',
-    'shotgun': 'https://halo.wiki.gallery/images/thumb/9/9a/H2_M90_Shotgun.png/300px-H2_M90_Shotgun.png',
-    'smg': 'https://halo.wiki.gallery/images/thumb/3/3a/H2_M7_SMG.png/300px-H2_M7_SMG.png',
-    'sub machine gun': 'https://halo.wiki.gallery/images/thumb/3/3a/H2_M7_SMG.png/300px-H2_M7_SMG.png',
-    'sniper rifle': 'https://halo.wiki.gallery/images/thumb/6/67/H2_SRS99C-S2_AM_Sniper_Rifle.png/300px-H2_SRS99C-S2_AM_Sniper_Rifle.png',
-    'sniper': 'https://halo.wiki.gallery/images/thumb/6/67/H2_SRS99C-S2_AM_Sniper_Rifle.png/300px-H2_SRS99C-S2_AM_Sniper_Rifle.png',
-    'rocket launcher': 'https://halo.wiki.gallery/images/thumb/7/7d/H2_M19_SSM_Rocket_Launcher.png/300px-H2_M19_SSM_Rocket_Launcher.png',
-    'rockets': 'https://halo.wiki.gallery/images/thumb/7/7d/H2_M19_SSM_Rocket_Launcher.png/300px-H2_M19_SSM_Rocket_Launcher.png',
-    'frag grenade': 'https://halo.wiki.gallery/images/thumb/e/e9/H2_M9_Fragmentation_Grenade.png/200px-H2_M9_Fragmentation_Grenade.png',
-    'grenade': 'https://halo.wiki.gallery/images/thumb/e/e9/H2_M9_Fragmentation_Grenade.png/200px-H2_M9_Fragmentation_Grenade.png',
+    'shotgun': 'https://halo.wiki.gallery/images/thumb/b/b6/H2A_Shotgun_Render.png/300px-H2A_Shotgun_Render.png',
+    'smg': 'https://halo.wiki.gallery/images/thumb/8/8a/H2A_SMG.png/300px-H2A_SMG.png',
+    'sub machine gun': 'https://halo.wiki.gallery/images/thumb/8/8a/H2A_SMG.png/300px-H2A_SMG.png',
+    'sniper rifle': 'https://halo.wiki.gallery/images/thumb/d/dc/H2A_SniperRifle.png/300px-H2A_SniperRifle.png',
+    'sniper': 'https://halo.wiki.gallery/images/thumb/d/dc/H2A_SniperRifle.png/300px-H2A_SniperRifle.png',
+    'rocket launcher': 'https://halo.wiki.gallery/images/thumb/5/5c/H2A_RocketLauncher.png/300px-H2A_RocketLauncher.png',
+    'rockets': 'https://halo.wiki.gallery/images/thumb/5/5c/H2A_RocketLauncher.png/300px-H2A_RocketLauncher.png',
+    'frag grenade': 'https://halo.wiki.gallery/images/thumb/a/a5/H2A_-_Frag.png/200px-H2A_-_Frag.png',
+    'grenade': 'https://halo.wiki.gallery/images/thumb/a/a5/H2A_-_Frag.png/200px-H2A_-_Frag.png',
     
     // Covenant Weapons
-    'plasma pistol': 'https://halo.wiki.gallery/images/thumb/f/f4/H2_Plasma_Pistol.png/250px-H2_Plasma_Pistol.png',
-    'plasma rifle': 'https://halo.wiki.gallery/images/thumb/5/51/H2_Plasma_Rifle.png/300px-H2_Plasma_Rifle.png',
-    'brute plasma rifle': 'https://halo.wiki.gallery/images/thumb/5/54/H2_Brute_Plasma_Rifle.png/300px-H2_Brute_Plasma_Rifle.png',
-    'carbine': 'https://halo.wiki.gallery/images/thumb/e/e8/H2_Type-51_Carbine.png/300px-H2_Type-51_Carbine.png',
-    'covenant carbine': 'https://halo.wiki.gallery/images/thumb/e/e8/H2_Type-51_Carbine.png/300px-H2_Type-51_Carbine.png',
-    'needler': 'https://halo.wiki.gallery/images/thumb/6/64/H2_Type-33_Needler.png/250px-H2_Type-33_Needler.png',
-    'beam rifle': 'https://halo.wiki.gallery/images/thumb/e/e3/H2_Beam_Rifle.png/300px-H2_Beam_Rifle.png',
-    'particle beam rifle': 'https://halo.wiki.gallery/images/thumb/e/e3/H2_Beam_Rifle.png/300px-H2_Beam_Rifle.png',
-    'brute shot': 'https://halo.wiki.gallery/images/thumb/c/c3/H2_Brute_Shot.png/300px-H2_Brute_Shot.png',
-    'energy sword': 'https://halo.wiki.gallery/images/thumb/a/a1/H2_Energy_Sword.png/250px-H2_Energy_Sword.png',
-    'sword': 'https://halo.wiki.gallery/images/thumb/a/a1/H2_Energy_Sword.png/250px-H2_Energy_Sword.png',
-    'plasma grenade': 'https://halo.wiki.gallery/images/thumb/6/61/H2_Plasma_Grenade.png/200px-H2_Plasma_Grenade.png',
+    'plasma pistol': 'https://halo.wiki.gallery/images/thumb/4/42/H2A_PlasmaPistol.png/250px-H2A_PlasmaPistol.png',
+    'plasma rifle': 'https://halo.wiki.gallery/images/thumb/c/c7/H2A_PlasmaRifle.png/300px-H2A_PlasmaRifle.png',
+    'brute plasma rifle': 'https://halo.wiki.gallery/images/thumb/c/c7/H2A_PlasmaRifle.png/300px-H2A_PlasmaRifle.png',
+    'carbine': 'https://halo.wiki.gallery/images/thumb/e/e1/H2A_Carbine.png/300px-H2A_Carbine.png',
+    'covenant carbine': 'https://halo.wiki.gallery/images/thumb/e/e1/H2A_Carbine.png/300px-H2A_Carbine.png',
+    'needler': 'https://halo.wiki.gallery/images/thumb/5/54/H2A_Needler.png/250px-H2A_Needler.png',
+    'beam rifle': 'https://halo.wiki.gallery/images/thumb/2/21/H2A_BeamRifle.png/300px-H2A_BeamRifle.png',
+    'particle beam rifle': 'https://halo.wiki.gallery/images/thumb/2/21/H2A_BeamRifle.png/300px-H2A_BeamRifle.png',
+    'brute shot': 'https://halo.wiki.gallery/images/thumb/7/71/H2A_BruteShot.png/300px-H2A_BruteShot.png',
+    'energy sword': 'https://halo.wiki.gallery/images/thumb/9/99/H2A_EnergySword.png/250px-H2A_EnergySword.png',
+    'sword': 'https://halo.wiki.gallery/images/thumb/9/99/H2A_EnergySword.png/250px-H2A_EnergySword.png',
+    'plasma grenade': 'https://halo.wiki.gallery/images/thumb/d/d0/H2A_-_Plasma.png/200px-H2A_-_Plasma.png',
     
     // Other
-    'sentinel beam': 'https://halo.wiki.gallery/images/thumb/2/24/H2_Sentinel_Beam.png/300px-H2_Sentinel_Beam.png',
+    'sentinel beam': 'https://halo.wiki.gallery/images/thumb/0/04/H2A_SentinelBeam.png/300px-H2A_SentinelBeam.png',
     'melee': 'https://halo.wiki.gallery/images/thumb/3/31/H2_M6C_Magnum_Pistol.png/224px-H2_M6C_Magnum_Pistol.png'
 };
 
@@ -511,8 +511,8 @@ function renderGameContent(game) {
     html += '<button class="tab-btn active" onclick="switchGameTab(this, \'scoreboard\')">Scoreboard</button>';
     html += '<button class="tab-btn" onclick="switchGameTab(this, \'stats\')">Detailed Stats</button>';
     html += '<button class="tab-btn" onclick="switchGameTab(this, \'accuracy\')">Accuracy</button>';
-    html += '<button class="tab-btn" onclick="switchGameTab(this, \'medals\')">Medals</button>';
     html += '<button class="tab-btn" onclick="switchGameTab(this, \'weapons\')">Weapons</button>';
+    html += '<button class="tab-btn" onclick="switchGameTab(this, \'medals\')">Medals</button>';
     html += '<button class="tab-btn" onclick="switchGameTab(this, \'twitch\')">Twitch</button>';
     html += '</div>';
     
@@ -529,11 +529,11 @@ function renderGameContent(game) {
     html += '</div>';
     
     html += '<div class="tab-content">';
-    html += renderMedals(game);
+    html += renderWeapons(game);
     html += '</div>';
     
     html += '<div class="tab-content">';
-    html += renderWeapons(game);
+    html += renderMedals(game);
     html += '</div>';
     
     html += '<div class="tab-content">';
@@ -830,19 +830,14 @@ function renderAccuracy(game) {
     // Get all weapon columns
     const weaponCols = Object.keys(weapons[0] || {}).filter(k => k !== 'Player');
     
-    // Group by weapon type
-    const weaponTypes = new Set();
-    weaponCols.forEach(col => {
-        const weaponName = col.replace(/ (kills|shots fired|shots hit)/gi, '').trim();
-        weaponTypes.add(weaponName);
-    });
-    
     let html = '<div class="accuracy-scoreboard">';
     
     // Header
     html += '<div class="accuracy-header">';
     html += '<div class="accuracy-player-col">PLAYER</div>';
-    html += '<div class="accuracy-stats-col">WEAPON ACCURACY</div>';
+    html += '<div class="accuracy-total-col">SHOTS HIT</div>';
+    html += '<div class="accuracy-total-col">SHOTS FIRED</div>';
+    html += '<div class="accuracy-total-col">ACCURACY</div>';
     html += '</div>';
     
     // Player rows
@@ -851,39 +846,28 @@ function renderAccuracy(game) {
         const team = playerTeams[playerName];
         const teamAttr = team ? `data-team="${team}"` : '';
         
+        // Calculate total shots hit and fired across all weapons
+        let totalHit = 0;
+        let totalFired = 0;
+        
+        weaponCols.forEach(col => {
+            if (col.toLowerCase().includes('hit')) {
+                totalHit += parseInt(weaponData[col]) || 0;
+            } else if (col.toLowerCase().includes('fired')) {
+                totalFired += parseInt(weaponData[col]) || 0;
+            }
+        });
+        
+        const accuracy = totalFired > 0 ? ((totalHit / totalFired) * 100).toFixed(1) : '0.0';
+        
         html += `<div class="accuracy-row" ${teamAttr}>`;
         html += `<div class="accuracy-player-col">`;
         html += getPlayerRankIcon(playerName, 'small');
         html += `<span class="player-name-text">${playerName}</span>`;
         html += `</div>`;
-        html += `<div class="accuracy-stats-col">`;
-        
-        // Show accuracy for each weapon with data
-        Array.from(weaponTypes).forEach(weaponName => {
-            const firedCol = weaponCols.find(c => c.includes(weaponName) && c.toLowerCase().includes('fired'));
-            const hitCol = weaponCols.find(c => c.includes(weaponName) && c.toLowerCase().includes('hit'));
-            
-            if (firedCol && hitCol) {
-                const fired = parseInt(weaponData[firedCol]) || 0;
-                const hit = parseInt(weaponData[hitCol]) || 0;
-                
-                if (fired > 0) {
-                    const accuracy = ((hit / fired) * 100).toFixed(1);
-                    const iconUrl = getWeaponIcon(weaponName);
-                    
-                    html += `<div class="accuracy-badge" title="${weaponName}: ${hit}/${fired} shots">`;
-                    if (iconUrl) {
-                        html += `<img src="${iconUrl}" alt="${weaponName}" class="weapon-icon-small">`;
-                    } else {
-                        html += `<span class="weapon-name-small">${weaponName}</span>`;
-                    }
-                    html += `<span class="accuracy-percent">${accuracy}%</span>`;
-                    html += `</div>`;
-                }
-            }
-        });
-        
-        html += `</div>`;
+        html += `<div class="accuracy-total-col">${totalHit}</div>`;
+        html += `<div class="accuracy-total-col">${totalFired}</div>`;
+        html += `<div class="accuracy-total-col accuracy-percent">${accuracy}%</div>`;
         html += `</div>`;
     });
     
