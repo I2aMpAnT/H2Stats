@@ -193,6 +193,20 @@ function formatDateTime(startTime) {
     return startTime;
 }
 
+// Format duration from M:SS to "Mmin SSsec"
+function formatDuration(duration) {
+    if (!duration) return '0min 0sec';
+    
+    // Parse the M:SS or MM:SS format
+    const parts = duration.split(':');
+    if (parts.length !== 2) return duration;
+    
+    const minutes = parseInt(parts[0]) || 0;
+    const seconds = parseInt(parts[1]) || 0;
+    
+    return `${minutes}min ${seconds}sec`;
+}
+
 // Helper function to check if team is valid (not none/null/empty)
 function isValidTeam(team) {
     if (!team) return false;
@@ -391,12 +405,16 @@ function createGameItem(game, gameNumber) {
     gameDiv.className = 'game-item';
     gameDiv.id = `game-${gameNumber}`;
     
+    // Store the actual gamesData index for reliable game lookup
+    const gameDataIndex = gamesData.indexOf(game);
+    gameDiv.setAttribute('data-game-index', gameDataIndex);
+    
     const details = game.details;
     const players = game.players;
     
     let displayGameType = details['Variant Name'] || details['Game Type'] || 'Unknown';
     let mapName = details['Map Name'] || 'Unknown Map';
-    let duration = details['Duration'] || '0:00';
+    let duration = formatDuration(details['Duration'] || '0:00');
     let startTime = details['Start Time'] || '';
     
     // Format date/time for display using helper function
@@ -468,7 +486,6 @@ function createGameItem(game, gameNumber) {
         </div>
         <div class="game-details">
             <div class="game-details-content">
-                <div class="game-date">${dateDisplay || 'Unknown Date'}</div>
                 <div id="game-content-${gameNumber}"></div>
             </div>
         </div>
@@ -491,9 +508,12 @@ function toggleGameDetails(gameNumber) {
         gameItem.classList.add('expanded');
         
         if (!gameContent.innerHTML) {
-            const gameIndex = gamesData.length - gameNumber;
+            // Get the stored game index from data attribute
+            const gameIndex = parseInt(gameItem.getAttribute('data-game-index'));
             const game = gamesData[gameIndex];
-            gameContent.innerHTML = renderGameContent(game);
+            if (game) {
+                gameContent.innerHTML = renderGameContent(game);
+            }
         }
     }
 }
@@ -502,7 +522,7 @@ function renderGameContent(game) {
     const mapName = game.details['Map Name'] || 'Unknown';
     const mapImage = mapImages[mapName] || defaultMapImage;
     const gameType = game.details['Variant Name'] || game.details['Game Type'] || 'Unknown';
-    const duration = game.details['Duration'] || '0:00';
+    const duration = formatDuration(game.details['Duration'] || '0:00');
     const startTime = game.details['Start Time'] || '';
     
     // Format the start time
@@ -1762,7 +1782,7 @@ function renderSearchGameCard(game, gameNumber, highlightPlayer = null) {
     const mapName = details['Map Name'] || 'Unknown';
     const mapImage = mapImages[mapName] || defaultMapImage;
     const gameType = details['Variant Name'] || 'Unknown';
-    const duration = details['Duration'] || '0:00';
+    const duration = formatDuration(details['Duration'] || '0:00');
     const startTime = details['Start Time'] || '';
     
     // Calculate team scores
