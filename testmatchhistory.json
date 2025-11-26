@@ -1,1 +1,42 @@
-{"total_test_matches": 0, "matches": []}
+{
+  "total_test_matches": 1,
+  "matches": [
+    {
+      "type": "SERIES",
+      "match_type": "TEST",
+      "series_label": "Test 1",
+      "match_id": 1,
+      "timestamp": "2025-11-27T01:42:34.650508",
+      "timestamp_display": "2025-11-27 01:42:34",
+      "winner": "TIE",
+      "final_score": {
+        "red": 0,
+        "blue": 0
+      },
+      "teams_final": {
+        "red": {
+          "players": [
+            283293015135748097,
+            1179648030375424032,
+            1228362001881759867,
+            1118666385921425478
+          ],
+          "voice_channel_id": 1443386355848708248
+        },
+        "blue": {
+          "players": [
+            884896715432411178,
+            165626999891689474,
+            309502376052523018,
+            176191518837702666
+          ],
+          "voice_channel_id": 1443386357048152124
+        }
+      },
+      "games": [],
+      "total_games_played": 0,
+      "stats_recorded": false,
+      "swap_history": []
+    }
+  ]
+}
