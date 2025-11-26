@@ -381,6 +381,9 @@ function renderGamesList() {
     });
     
     console.log('[DEBUG] All game items created');
+    
+    // Populate filter dropdowns
+    populateMainFilters();
 }
 
 function createGameItem(game, gameNumber) {
@@ -2344,10 +2347,3 @@ document.addEventListener('click', function(e) {
         closePlayerModal();
     }
 });
-
-// Initialize filters after data loads
-const originalDisplayGames = displayGames;
-displayGames = function() {
-    originalDisplayGames();
-    populateMainFilters();
-};

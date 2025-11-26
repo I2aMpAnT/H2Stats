@@ -1,9 +1,3 @@
 @echo off
-echo Starting local web server...
-echo.
-echo Open your browser to: http://localhost:8000
-echo.
-echo Press Ctrl+C to stop the server
-echo.
-python -m http.server 8000
+powershell -ExecutionPolicy Bypass -File "%~dp0start-server.ps1"
 pause
