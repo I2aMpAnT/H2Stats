@@ -36,15 +36,17 @@ const mapImages = {
 // Default map image if not found
 const defaultMapImage = 'mapimages/Midship.jpeg';
 
-// Medal icons - local files from h2icons folder (25 medals)
+// Medal icons - Original Halo 2 medals (23 total)
+// Using local files - these need transparent backgrounds
 const medalIcons = {
-    // Kill streaks (within 4 seconds)
+    // Multi-kills (within 4 seconds)
     'double_kill': 'h2icons/Double Kill.bmp',
     'triple_kill': 'h2icons/Triple Kill.bmp',
     'killtacular': 'h2icons/Killtacular.bmp',
     'kill_frenzy': 'h2icons/Kill Frenzy.bmp',
     'killtrocity': 'h2icons/Killtrocity.bmp',
     'killamanjaro': 'h2icons/Killamanjaro.bmp',
+    'killimanjaro': 'h2icons/Killamanjaro.bmp',
     
     // Spree medals (kills without dying)
     'killing_spree': 'h2icons/Killing Spree.bmp',
@@ -55,9 +57,10 @@ const medalIcons = {
     
     // Special kills
     'assassin': 'h2icons/Assassin.bmp',
-    'assassinate': 'h2icons/Assassin.bmp',
     'assassination': 'h2icons/Assassin.bmp',
     'bonecracker': 'h2icons/Bonecracker.bmp',
+    'bone_cracker': 'h2icons/Bonecracker.bmp',
+    'pummel': 'h2icons/Bonecracker.bmp',
     'sniper_kill': 'h2icons/Sniper Kill.bmp',
     'sniper': 'h2icons/Sniper Kill.bmp',
     'stick_it': 'h2icons/Stick It.bmp',
@@ -74,8 +77,6 @@ const medalIcons = {
     
     // Bomb objectives
     'bomb_planted': 'h2icons/Bomb Planted.bmp',
-    'bomb_taken': 'h2icons/Bomb Taken.bmp',
-    'bomb_returned': 'h2icons/Bomb Returned.bmp',
     'bomb_carrier_kill': 'h2icons/Bomb Carrier Kill.bmp'
 };
 
@@ -718,17 +719,13 @@ function renderMedals(game) {
             if (iconPath) {
                 html += `<div class="medal-badge" title="${medalName}">`;
                 html += `<img src="${iconPath}" alt="${medalName}" class="medal-icon">`;
-                if (count > 1) {
-                    html += `<span class="medal-count">x${count}</span>`;
-                }
+                html += `<span class="medal-count">x${count}</span>`;
                 html += `</div>`;
             } else {
                 // Fallback for unknown medals - show ? icon with tooltip
                 html += `<div class="medal-badge medal-unknown" title="${medalName}">`;
                 html += `<span class="medal-placeholder">?</span>`;
-                if (count > 1) {
-                    html += `<span class="medal-count">x${count}</span>`;
-                }
+                html += `<span class="medal-count">x${count}</span>`;
                 html += `</div>`;
             }
         });
