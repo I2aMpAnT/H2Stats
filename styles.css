@@ -282,12 +282,17 @@ header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background: linear-gradient(90deg, rgba(0, 217, 255, 0.05), transparent);
+    background: 
+        linear-gradient(90deg, rgba(10, 14, 23, 0.92) 0%, rgba(10, 14, 23, 0.75) 50%, rgba(10, 14, 23, 0.92) 100%),
+        var(--map-bg) center/cover no-repeat;
     transition: all 0.3s ease;
+    position: relative;
 }
 
 .game-header-bar:hover {
-    background: linear-gradient(90deg, rgba(0, 217, 255, 0.1), transparent);
+    background: 
+        linear-gradient(90deg, rgba(0, 217, 255, 0.15) 0%, rgba(10, 14, 23, 0.65) 50%, rgba(0, 217, 255, 0.1) 100%),
+        var(--map-bg) center/cover no-repeat;
 }
 
 .game-header-left {
@@ -1349,6 +1354,151 @@ header {
 /* Twitch Section Styles */
 .twitch-section {
     padding: 20px;
+}
+
+/* Medals Scoreboard Styles */
+.medals-scoreboard {
+    width: 100%;
+    background: rgba(15, 20, 35, 0.5);
+    border: 1px solid rgba(0, 217, 255, 0.2);
+}
+
+.medals-header {
+    display: grid;
+    grid-template-columns: 200px 1fr;
+    gap: 20px;
+    padding: 15px 20px;
+    background: rgba(0, 217, 255, 0.1);
+    border-bottom: 2px solid var(--unsc-blue);
+    font-family: 'Orbitron', sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--unsc-blue);
+    text-transform: uppercase;
+}
+
+.medals-row {
+    display: grid;
+    grid-template-columns: 200px 1fr;
+    gap: 20px;
+    padding: 12px 20px;
+    border-bottom: 1px solid rgba(0, 217, 255, 0.1);
+    align-items: center;
+    transition: all 0.3s ease;
+}
+
+.medals-row:last-child {
+    border-bottom: none;
+}
+
+.medals-row:hover {
+    background: rgba(0, 217, 255, 0.05);
+}
+
+.medals-row[data-team="Red"] {
+    background: rgba(220, 20, 60, 0.15);
+    border-left: 4px solid #dc143c;
+}
+
+.medals-row[data-team="Blue"] {
+    background: rgba(30, 80, 180, 0.25);
+    border-left: 4px solid #3388ff;
+}
+
+.medals-row[data-team="Red"]:hover {
+    background: rgba(220, 20, 60, 0.25);
+}
+
+.medals-row[data-team="Blue"]:hover {
+    background: rgba(30, 80, 180, 0.35);
+}
+
+.medals-player-col {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.medals-icons-col {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    align-items: center;
+}
+
+.medal-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    background: rgba(0, 0, 0, 0.4);
+    padding: 4px 8px;
+    border-radius: 4px;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    transition: all 0.2s ease;
+}
+
+.medal-badge:hover {
+    background: rgba(0, 217, 255, 0.2);
+    border-color: rgba(0, 217, 255, 0.5);
+    transform: translateY(-2px);
+}
+
+.medal-icon {
+    width: 24px;
+    height: 24px;
+    object-fit: contain;
+}
+
+.medal-count {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--warning-orange);
+}
+
+.medal-unknown {
+    background: rgba(100, 100, 100, 0.3);
+}
+
+.medal-fallback {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 10px;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+}
+
+.no-medals {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 12px;
+    color: var(--text-secondary);
+    font-style: italic;
+}
+
+@media (max-width: 768px) {
+    .medals-header,
+    .medals-row {
+        grid-template-columns: 140px 1fr;
+        gap: 10px;
+        padding: 10px 12px;
+    }
+    
+    .medals-header {
+        font-size: 10px;
+    }
+    
+    .medal-icon {
+        width: 20px;
+        height: 20px;
+    }
+    
+    .medal-badge {
+        padding: 3px 6px;
+        gap: 3px;
+    }
+    
+    .medal-count {
+        font-size: 10px;
+    }
 }
 
 .twitch-header {

@@ -56,8 +56,10 @@ const medalIcons = {
     // Special kills
     'assassin': 'h2icons/Assassin.png',
     'assassinate': 'h2icons/Assassin.png',
+    'assassination': 'h2icons/Assassin.png',
     'bonecracker': 'h2icons/Bonecracker.png',
     'sniper_kill': 'h2icons/Sniper Kill.png',
+    'sniper': 'h2icons/Sniper Kill.png',
     'stick_it': 'h2icons/Stick It.png',
     'stick': 'h2icons/Stick It.png',
     'roadkill': 'h2icons/Roadkill.png',
@@ -641,43 +643,55 @@ function renderMedals(game) {
         return teamA - teamB;
     });
     
-    let html = '<div class="medals-display">';
+    let html = '<div class="medals-scoreboard">';
+    
+    // Header
+    html += '<div class="medals-header">';
+    html += '<div class="medals-player-col">Player</div>';
+    html += '<div class="medals-icons-col">Medals Earned</div>';
+    html += '</div>';
     
     sortedMedals.forEach(playerMedals => {
         const team = playerTeams[playerMedals.player];
-        const teamClass = team ? `team-${team.toLowerCase()}` : '';
+        const teamAttr = team ? `data-team="${team}"` : '';
         
-        html += `<div class="player-medals-row ${teamClass}">`;
-        html += `<div class="player-medals-name">`;
+        html += `<div class="medals-row" ${teamAttr}>`;
+        html += `<div class="medals-player-col">`;
         html += getPlayerRankIcon(playerMedals.player, 'small');
-        html += `<span>${playerMedals.player}</span>`;
+        html += `<span class="player-name-text">${playerMedals.player}</span>`;
         html += `</div>`;
-        html += `<div class="player-medals-icons">`;
+        html += `<div class="medals-icons-col">`;
         
         // Get all medals for this player (excluding the 'player' key)
+        let hasMedals = false;
         Object.entries(playerMedals).forEach(([medalKey, count]) => {
             if (medalKey === 'player' || count === 0) return;
             
+            hasMedals = true;
             const iconPath = getMedalIcon(medalKey);
             const medalName = formatMedalName(medalKey);
             
             if (iconPath) {
-                html += `<div class="medal-item" title="${medalName}">`;
+                html += `<div class="medal-badge" title="${medalName}">`;
                 html += `<img src="${iconPath}" alt="${medalName}" class="medal-icon">`;
                 if (count > 1) {
                     html += `<span class="medal-count">x${count}</span>`;
                 }
                 html += `</div>`;
             } else {
-                // Fallback if no icon found - show text
-                html += `<div class="medal-item medal-text" title="${medalName}">`;
-                html += `<span class="medal-name-fallback">${medalName}</span>`;
+                // Fallback for unknown medals
+                html += `<div class="medal-badge medal-unknown" title="${medalName}">`;
+                html += `<span class="medal-fallback">${medalName}</span>`;
                 if (count > 1) {
                     html += `<span class="medal-count">x${count}</span>`;
                 }
                 html += `</div>`;
             }
         });
+        
+        if (!hasMedals) {
+            html += `<span class="no-medals">No medals</span>`;
+        }
         
         html += `</div>`;
         html += `</div>`;
