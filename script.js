@@ -1282,19 +1282,29 @@ function renderLeaderboard() {
 }
 
 function initializeSearch() {
+    console.log('[SEARCH] Initializing search functionality...');
+    
     const searchInput = document.getElementById('playerSearch');
     const searchResults = document.getElementById('searchResults');
     const searchInput2 = document.getElementById('playerSearch2');
     const searchResults2 = document.getElementById('searchResults2');
     
-    if (!searchInput || !searchResults) return;
+    if (!searchInput || !searchResults) {
+        console.error('[SEARCH] Main search elements not found!');
+        return;
+    }
+    
+    console.log('[SEARCH] Main search elements found');
+    console.log('[SEARCH] Games data available:', gamesData ? gamesData.length : 0);
     
     // Setup first search box
     setupSearchBox(searchInput, searchResults, 1);
+    console.log('[SEARCH] Main search box initialized');
     
     // Setup second search box if it exists
     if (searchInput2 && searchResults2) {
         setupSearchBox(searchInput2, searchResults2, 2);
+        console.log('[SEARCH] Secondary search box initialized');
     }
     
     // Setup PVP search boxes
@@ -1305,11 +1315,14 @@ function initializeSearch() {
     
     if (pvpPlayer1 && pvpResults1) {
         setupPvpSearchBox(pvpPlayer1, pvpResults1, 1);
+        console.log('[SEARCH] PVP Player 1 search initialized');
     }
     if (pvpPlayer2 && pvpResults2) {
         setupPvpSearchBox(pvpPlayer2, pvpResults2, 2);
+        console.log('[SEARCH] PVP Player 2 search initialized');
     }
     
+    // Close dropdowns when clicking outside
     document.addEventListener('click', function(e) {
         if (!searchInput.contains(e.target) && !searchResults.contains(e.target)) {
             searchResults.classList.remove('active');
@@ -1324,6 +1337,8 @@ function initializeSearch() {
             pvpResults2.classList.remove('active');
         }
     });
+    
+    console.log('[SEARCH] Search initialization complete!');
 }
 
 function setupPvpSearchBox(inputElement, resultsElement, playerNum) {
@@ -1332,6 +1347,13 @@ function setupPvpSearchBox(inputElement, resultsElement, playerNum) {
         
         if (query.length < 2) {
             resultsElement.classList.remove('active');
+            return;
+        }
+        
+        // Check if games data is loaded
+        if (!gamesData || gamesData.length === 0) {
+            resultsElement.innerHTML = '<div class="search-result-item">Loading game data...</div>';
+            resultsElement.classList.add('active');
             return;
         }
         
@@ -1432,10 +1454,22 @@ function setupSearchBox(inputElement, resultsElement, boxNumber) {
     inputElement.addEventListener('input', function(e) {
         const query = e.target.value.toLowerCase().trim();
         
+        console.log('[SEARCH] Query:', query, 'Length:', query.length);
+        
         if (query.length < 2) {
             resultsElement.classList.remove('active');
             return;
         }
+        
+        // Check if games data is loaded
+        if (!gamesData || gamesData.length === 0) {
+            resultsElement.innerHTML = '<div class="search-result-item">Loading game data...</div>';
+            resultsElement.classList.add('active');
+            console.warn('[SEARCH] Games data not yet loaded');
+            return;
+        }
+        
+        console.log('[SEARCH] Searching through', gamesData.length, 'games');
         
         const results = [];
         
