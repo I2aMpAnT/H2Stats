@@ -2067,9 +2067,144 @@ function escapeHtml(text) {
 
 let currentProfilePlayer = null;
 let currentProfileGames = [];
+let currentWinLossFilter = 'all'; // Track current filter
+
+function filterProfileByWinLoss(filterType) {
+    currentWinLossFilter = filterType;
+    
+    // Remove active class from all stat cards
+    document.querySelectorAll('.profile-stat-card').forEach(card => {
+        card.classList.remove('stat-active');
+    });
+    
+    let filteredGames = [...currentProfileGames];
+    
+    if (filterType === 'wins') {
+        filteredGames = currentProfileGames.filter(game => {
+            const player = game.playerData;
+            const hasTeams = game.players.some(p => isValidTeam(p.team));
+            
+            if (hasTeams && isValidTeam(player.team)) {
+                // Team game - check if player's team won
+                const teams = {};
+                game.players.forEach(p => {
+                    if (isValidTeam(p.team)) {
+                        teams[p.team] = (teams[p.team] || 0) + (parseInt(p.score) || 0);
+                    }
+                });
+                const sortedTeams = Object.entries(teams).sort((a, b) => b[1] - a[1]);
+                return sortedTeams[0] && sortedTeams[0][0] === player.team;
+            } else {
+                // FFA - check if player had highest score
+                const maxScore = Math.max(...game.players.map(p => parseInt(p.score) || 0));
+                return (parseInt(player.score) || 0) === maxScore;
+            }
+        });
+        
+        // Highlight wins card
+        event.target.closest('.profile-stat-card').classList.add('stat-active');
+    } else if (filterType === 'losses') {
+        filteredGames = currentProfileGames.filter(game => {
+            const player = game.playerData;
+            const hasTeams = game.players.some(p => isValidTeam(p.team));
+            
+            if (hasTeams && isValidTeam(player.team)) {
+                // Team game - check if player's team lost
+                const teams = {};
+                game.players.forEach(p => {
+                    if (isValidTeam(p.team)) {
+                        teams[p.team] = (teams[p.team] || 0) + (parseInt(p.score) || 0);
+                    }
+                });
+                const sortedTeams = Object.entries(teams).sort((a, b) => b[1] - a[1]);
+                return sortedTeams[0] && sortedTeams[0][0] !== player.team;
+            } else {
+                // FFA - check if player didn't have highest score
+                const maxScore = Math.max(...game.players.map(p => parseInt(p.score) || 0));
+                return (parseInt(player.score) || 0) !== maxScore;
+            }
+        });
+        
+        // Highlight losses card
+        event.target.closest('.profile-stat-card').classList.add('stat-active');
+    }
+    
+    // Apply any existing filters
+    filterPlayerGames(filteredGames);
+}
+
+function showWeaponBreakdown() {
+    if (!currentProfilePlayer) return;
+    
+    // Calculate weapon stats for the player
+    const weaponStats = {};
+    
+    currentProfileGames.forEach(game => {
+        const weaponData = game.weapons?.find(w => w.Player === currentProfilePlayer);
+        if (weaponData) {
+            Object.keys(weaponData).forEach(key => {
+                if (key !== 'Player' && key.toLowerCase().includes('kills')) {
+                    const weaponName = key.replace(/ kills/gi, '').trim();
+                    const kills = parseInt(weaponData[key]) || 0;
+                    if (kills > 0) {
+                        weaponStats[weaponName] = (weaponStats[weaponName] || 0) + kills;
+                    }
+                }
+            });
+        }
+    });
+    
+    // Sort by most kills
+    const sortedWeapons = Object.entries(weaponStats).sort((a, b) => b[1] - a[1]);
+    
+    // Create modal or overlay to show weapon breakdown
+    let html = '<div class="weapon-breakdown-overlay" onclick="closeWeaponBreakdown()">';
+    html += '<div class="weapon-breakdown-modal" onclick="event.stopPropagation()">';
+    html += `<div class="weapon-breakdown-header">`;
+    html += `<h2>${currentProfilePlayer} - Weapon Breakdown</h2>`;
+    html += `<button class="modal-close" onclick="closeWeaponBreakdown()">&times;</button>`;
+    html += `</div>`;
+    html += '<div class="weapon-breakdown-grid">';
+    
+    sortedWeapons.forEach(([weapon, kills]) => {
+        const iconUrl = getWeaponIcon(weapon);
+        const percentage = ((kills / Object.values(weaponStats).reduce((a, b) => a + b, 0)) * 100).toFixed(1);
+        
+        html += `<div class="weapon-breakdown-item">`;
+        if (iconUrl) {
+            html += `<img src="${iconUrl}" alt="${weapon}" class="weapon-breakdown-icon">`;
+        } else {
+            html += `<div class="weapon-breakdown-placeholder">${weapon.substring(0, 2).toUpperCase()}</div>`;
+        }
+        html += `<div class="weapon-breakdown-info">`;
+        html += `<div class="weapon-breakdown-name">${weapon}</div>`;
+        html += `<div class="weapon-breakdown-stats">${kills} kills (${percentage}%)</div>`;
+        html += `</div>`;
+        html += `</div>`;
+    });
+    
+    html += '</div>';
+    html += '</div>';
+    html += '</div>';
+    
+    // Add to page
+    const overlay = document.createElement('div');
+    overlay.innerHTML = html;
+    document.body.appendChild(overlay.firstChild);
+}
+
+function closeWeaponBreakdown() {
+    const overlay = document.querySelector('.weapon-breakdown-overlay');
+    if (overlay) {
+        overlay.remove();
+    }
+}
+
+// ==================== PLAYER PROFILE FUNCTIONS ====================
 
 function openPlayerProfile(playerName) {
     currentProfilePlayer = playerName;
+    currentWinLossFilter = 'all'; // Reset filter
     
     // Hide other sections
     document.getElementById('statsArea').style.display = 'none';
@@ -2151,19 +2286,23 @@ function calculatePlayerOverallStats(playerName) {
 function renderProfileStats(stats) {
     const container = document.getElementById('profileOverallStats');
     container.innerHTML = `
-        <div class="profile-stat-card">
+        <div class="profile-stat-card" onclick="filterProfileByWinLoss('all')">
             <div class="stat-value">${stats.games}</div>
             <div class="stat-label">Games</div>
         </div>
-        <div class="profile-stat-card">
+        <div class="profile-stat-card clickable-stat" onclick="filterProfileByWinLoss('wins')">
             <div class="stat-value">${stats.wins}</div>
             <div class="stat-label">Wins</div>
+        </div>
+        <div class="profile-stat-card clickable-stat" onclick="filterProfileByWinLoss('losses')">
+            <div class="stat-value">${stats.losses}</div>
+            <div class="stat-label">Losses</div>
         </div>
         <div class="profile-stat-card">
             <div class="stat-value">${stats.winRate}%</div>
             <div class="stat-label">Win Rate</div>
         </div>
-        <div class="profile-stat-card">
+        <div class="profile-stat-card clickable-stat" onclick="showWeaponBreakdown()">
             <div class="stat-value">${stats.kills}</div>
             <div class="stat-label">Total Kills</div>
         </div>
@@ -2261,6 +2400,49 @@ function sortPlayerGames() {
 
 function filterPlayerGames(preFilteredGames = null) {
     let games = preFilteredGames || [...currentProfileGames];
+    
+    // Apply win/loss filter if not 'all'
+    if (currentWinLossFilter !== 'all' && !preFilteredGames) {
+        if (currentWinLossFilter === 'wins') {
+            games = games.filter(game => {
+                const player = game.playerData;
+                const hasTeams = game.players.some(p => isValidTeam(p.team));
+                
+                if (hasTeams && isValidTeam(player.team)) {
+                    const teams = {};
+                    game.players.forEach(p => {
+                        if (isValidTeam(p.team)) {
+                            teams[p.team] = (teams[p.team] || 0) + (parseInt(p.score) || 0);
+                        }
+                    });
+                    const sortedTeams = Object.entries(teams).sort((a, b) => b[1] - a[1]);
+                    return sortedTeams[0] && sortedTeams[0][0] === player.team;
+                } else {
+                    const maxScore = Math.max(...game.players.map(p => parseInt(p.score) || 0));
+                    return (parseInt(player.score) || 0) === maxScore;
+                }
+            });
+        } else if (currentWinLossFilter === 'losses') {
+            games = games.filter(game => {
+                const player = game.playerData;
+                const hasTeams = game.players.some(p => isValidTeam(p.team));
+                
+                if (hasTeams && isValidTeam(player.team)) {
+                    const teams = {};
+                    game.players.forEach(p => {
+                        if (isValidTeam(p.team)) {
+                            teams[p.team] = (teams[p.team] || 0) + (parseInt(p.score) || 0);
+                        }
+                    });
+                    const sortedTeams = Object.entries(teams).sort((a, b) => b[1] - a[1]);
+                    return sortedTeams[0] && sortedTeams[0][0] !== player.team;
+                } else {
+                    const maxScore = Math.max(...game.players.map(p => parseInt(p.score) || 0));
+                    return (parseInt(player.score) || 0) !== maxScore;
+                }
+            });
+        }
+    }
     
     if (profileCurrentMapFilter) {
         games = games.filter(g => g.details['Map Name'] === profileCurrentMapFilter);
@@ -2472,6 +2654,12 @@ function clearAllFilters() {
 function clearProfileFilters() {
     profileCurrentMapFilter = '';
     profileCurrentGametypeFilter = '';
+    currentWinLossFilter = 'all'; // Reset win/loss filter
+    
+    // Remove active state from stat cards
+    document.querySelectorAll('.profile-stat-card').forEach(card => {
+        card.classList.remove('stat-active');
+    });
     
     const mapInput = document.getElementById('profileFilterMapInput');
     const typeInput = document.getElementById('profileFilterGametypeInput');
