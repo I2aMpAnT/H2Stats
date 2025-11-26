@@ -332,16 +332,32 @@ function createGameItem(game, gameNumber) {
     let duration = details['Duration'] || '0:00';
     let startTime = details['Start Time'] || '';
     
-    // Format date/time for display (shorter version)
+    // Format date/time for display (clean, compact version)
     let dateDisplay = '';
     if (startTime) {
-        // Try to extract just date portion or format nicely
-        const dateMatch = startTime.match(/(\d{1,2}\/\d{1,2}\/\d{2,4})/);
-        const timeMatch = startTime.match(/(\d{1,2}:\d{2}(?::\d{2})?\s*(?:AM|PM)?)/i);
+        const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+        
+        // Try to parse date components
+        const dateMatch = startTime.match(/(\d{1,2})\/(\d{1,2})\/(\d{2,4})/);
+        const timeMatch = startTime.match(/(\d{1,2}):(\d{2})(?::\d{2})?\s*(AM|PM)?/i);
+        
         if (dateMatch) {
-            dateDisplay = dateMatch[1];
+            const month = parseInt(dateMatch[1]) - 1;
+            const day = parseInt(dateMatch[2]);
+            const monthName = months[month] || dateMatch[1];
+            dateDisplay = `${monthName} ${day}`;
+            
             if (timeMatch) {
-                dateDisplay += ' ' + timeMatch[1];
+                let hour = parseInt(timeMatch[1]);
+                const minutes = timeMatch[2];
+                const ampm = timeMatch[3] ? timeMatch[3].toUpperCase() : '';
+                
+                // Format time cleanly (drop :00 minutes, keep AM/PM)
+                if (minutes === '00') {
+                    dateDisplay += ` · ${hour}${ampm}`;
+                } else {
+                    dateDisplay += ` · ${hour}:${minutes}${ampm}`;
+                }
             }
         } else {
             dateDisplay = startTime;
