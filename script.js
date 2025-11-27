@@ -506,7 +506,7 @@ function createGameItem(game, gameNumber) {
     }
     
     gameDiv.innerHTML = `
-        <div class="game-header-bar ${winnerClass}" onclick="toggleGameDetails(${gameNumber})" style="--map-bg: url('${mapImage}')">
+        <div class="game-header-bar ${winnerClass}" onclick="toggleGameDetails(${gameNumber})">
             <div class="game-header-left">
                 <div class="game-number">${displayGameType}</div>
                 <div class="game-info">
