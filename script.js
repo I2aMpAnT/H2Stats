@@ -1734,7 +1734,7 @@ function renderPlayerSearchResults(playerName) {
     html += `<div class="stat-card"><div class="stat-label">Wins</div><div class="stat-value">${stats.wins}</div><div class="stat-sublabel">${stats.winrate}% Win Rate</div></div>`;
     html += `<div class="stat-card"><div class="stat-label">Kills</div><div class="stat-value">${stats.kills}</div><div class="stat-sublabel">${stats.kpg} per game</div></div>`;
     html += `<div class="stat-card"><div class="stat-label">Deaths</div><div class="stat-value">${stats.deaths}</div></div>`;
-    html += `<div class="stat-card"><div class="stat-label">K/D</div><div class="stat-value">${stats.kd}</div></div>`;
+    html += `<div class="stat-card clickable-stat" onclick="showPlayersFacedBreakdown()"><div class="stat-label">K/D</div><div class="stat-value">${stats.kd}</div></div>`;
     html += `<div class="stat-card"><div class="stat-label">Assists</div><div class="stat-value">${stats.assists}</div></div>`;
     html += `<div class="stat-card clickable-stat" onclick="showSearchMedalBreakdown()"><div class="stat-label">Total Medals</div><div class="stat-value">${stats.totalMedals}</div></div>`;
     html += '</div>';
@@ -2432,6 +2432,83 @@ function closeMedalBreakdown() {
     if (overlay) {
         overlay.remove();
     }
+}
+
+function showPlayersFacedBreakdown() {
+    const playerName = window.currentSearchContext;
+    if (!playerName) return;
+
+    // Calculate players faced
+    const playersFaced = {};
+    const playerGames = gamesData.filter(game =>
+        game.players.some(p => p.name === playerName)
+    );
+
+    playerGames.forEach(game => {
+        const thisPlayer = game.players.find(p => p.name === playerName);
+        game.players.forEach(p => {
+            if (p.name !== playerName) {
+                if (!playersFaced[p.name]) {
+                    playersFaced[p.name] = {
+                        games: 0,
+                        asTeammate: 0,
+                        asOpponent: 0
+                    };
+                }
+                playersFaced[p.name].games++;
+
+                // Check if teammate or opponent
+                if (thisPlayer && thisPlayer.team && p.team &&
+                    thisPlayer.team !== 'none' && thisPlayer.team !== 'None' &&
+                    p.team !== 'none' && p.team !== 'None') {
+                    if (thisPlayer.team === p.team) {
+                        playersFaced[p.name].asTeammate++;
+                    } else {
+                        playersFaced[p.name].asOpponent++;
+                    }
+                }
+            }
+        });
+    });
+
+    // Sort by most games played together
+    const sortedPlayers = Object.entries(playersFaced).sort((a, b) => b[1].games - a[1].games);
+
+    // Create modal
+    let html = '<div class="weapon-breakdown-overlay" onclick="closeMedalBreakdown()">';
+    html += '<div class="weapon-breakdown-modal" onclick="event.stopPropagation()">';
+    html += `<div class="weapon-breakdown-header">`;
+    html += `<h2>${playerName} - Players Faced</h2>`;
+    html += `<button class="modal-close" onclick="closeMedalBreakdown()">&times;</button>`;
+    html += `</div>`;
+    html += '<div class="weapon-breakdown-grid">';
+
+    if (sortedPlayers.length === 0) {
+        html += '<div class="no-data">No player data available</div>';
+    }
+
+    sortedPlayers.forEach(([name, data]) => {
+        html += `<div class="weapon-breakdown-item player-faced-item">`;
+        html += `<div class="player-faced-rank">${getPlayerRankIcon(name, 'small')}</div>`;
+        html += `<div class="weapon-breakdown-info">`;
+        html += `<div class="weapon-breakdown-name clickable-player" data-player="${name}" onclick="event.stopPropagation(); closeMedalBreakdown(); openSearchResultsPage('player', '${name}')">${name}</div>`;
+        html += `<div class="weapon-breakdown-stats">${data.games} games`;
+        if (data.asTeammate > 0 || data.asOpponent > 0) {
+            html += ` (${data.asTeammate} as teammate, ${data.asOpponent} as opponent)`;
+        }
+        html += `</div>`;
+        html += `</div>`;
+        html += `</div>`;
+    });
+
+    html += '</div>';
+    html += '</div>';
+    html += '</div>';
+
+    // Add to page
+    const overlay = document.createElement('div');
+    overlay.innerHTML = html;
+    document.body.appendChild(overlay.firstChild);
 }
 
 function showSearchMedalBreakdown() {
