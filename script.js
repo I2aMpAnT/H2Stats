@@ -1883,11 +1883,9 @@ function renderSearchGameCard(game, gameNumber, highlightPlayer = null) {
     const details = game.details;
     const players = game.players;
     const mapName = details['Map Name'] || 'Unknown';
-    const mapImage = mapImages[mapName] || defaultMapImage;
     const gameType = details['Variant Name'] || 'Unknown';
-    const duration = formatDuration(details['Duration'] || '0:00');
     const startTime = details['Start Time'] || '';
-    
+
     // Calculate team scores
     let teamScoreHtml = '';
     const teams = {};
@@ -1897,7 +1895,6 @@ function renderSearchGameCard(game, gameNumber, highlightPlayer = null) {
         const team = player.team;
         if (team && team !== 'None' && team !== 'none' && team.toLowerCase() !== 'none') {
             if (!teams[team]) teams[team] = 0;
-            // For Oddball, sum time values; for other games, sum scores
             if (isOddball) {
                 teams[team] += timeToSeconds(player.score);
             } else {
@@ -1908,23 +1905,15 @@ function renderSearchGameCard(game, gameNumber, highlightPlayer = null) {
 
     if (Object.keys(teams).length >= 2) {
         const sortedTeams = Object.entries(teams).sort((a, b) => b[1] - a[1]);
-        teamScoreHtml = '<div class="card-team-scores">';
+        teamScoreHtml = '<span class="game-meta-tag score-tag">';
         sortedTeams.forEach(([team, score], index) => {
             const displayScore = isOddball ? secondsToTime(score) : score;
             teamScoreHtml += `<span class="team-score-${team.toLowerCase()}">${team}: ${displayScore}</span>`;
-            if (index < sortedTeams.length - 1) teamScoreHtml += '<span class="score-vs">vs</span>';
+            if (index < sortedTeams.length - 1) teamScoreHtml += ' vs ';
         });
-        teamScoreHtml += '</div>';
+        teamScoreHtml += '</span>';
     }
-    
-    // Sort players by team
-    const sortedPlayers = [...players].sort((a, b) => {
-        const teamOrder = { 'Red': 0, 'Blue': 1 };
-        const teamA = teamOrder[a.team] !== undefined ? teamOrder[a.team] : 2;
-        const teamB = teamOrder[b.team] !== undefined ? teamOrder[b.team] : 2;
-        return teamA - teamB;
-    });
-    
+
     // Determine winner class
     let winnerClass = '';
     if (Object.keys(teams).length >= 2) {
@@ -1934,24 +1923,49 @@ function renderSearchGameCard(game, gameNumber, highlightPlayer = null) {
         }
     }
 
-    let html = `<div class="search-game-card ${winnerClass}" onclick="scrollToGame(${gameNumber})">`;
-    html += '<div class="search-card-content">';
-    html += '<div class="search-card-left">';
-    html += `<div class="search-card-gametype">${gameType}</div>`;
-    html += '<div class="search-card-tags">';
-    html += `<span class="game-meta-tag">Game ${gameNumber}</span>`;
+    const searchCardId = `search-game-${gameNumber}`;
+
+    let html = `<div class="game-item" id="${searchCardId}">`;
+    html += `<div class="game-header-bar ${winnerClass}" onclick="toggleSearchGameDetails('${searchCardId}', ${gameNumber})">`;
+    html += '<div class="game-header-left">';
+    html += `<div class="game-number">${gameType}</div>`;
+    html += '<div class="game-info">';
+    html += `<span class="game-meta-tag game-num-tag">Game ${gameNumber}</span>`;
     html += `<span class="game-meta-tag">${mapName}</span>`;
     html += teamScoreHtml;
     html += '</div>';
     html += '</div>';
-    html += '<div class="search-card-right">';
+    html += '<div class="game-header-right">';
     if (startTime) {
         html += `<span class="game-meta-tag date-tag">${startTime}</span>`;
     }
+    html += '<div class="expand-icon">▶</div>';
     html += '</div>';
     html += '</div>';
+    html += `<div class="game-details"><div class="game-details-content" id="${searchCardId}-content"></div></div>`;
     html += '</div>';
     return html;
+}
+
+function toggleSearchGameDetails(searchCardId, gameNumber) {
+    const gameItem = document.getElementById(searchCardId);
+    const gameContent = document.getElementById(`${searchCardId}-content`);
+
+    if (!gameItem || !gameContent) return;
+
+    const isExpanded = gameItem.classList.contains('expanded');
+
+    if (isExpanded) {
+        gameItem.classList.remove('expanded');
+        gameContent.innerHTML = '';
+    } else {
+        // Find the game data
+        const game = gamesData[gamesData.length - gameNumber];
+        if (game) {
+            gameItem.classList.add('expanded');
+            gameContent.innerHTML = renderGameContent(game);
+        }
+    }
 }
 
 function scrollToGame(gameNumber) {
