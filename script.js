@@ -525,7 +525,6 @@ function createGameItem(game, gameNumber) {
                 <div class="game-info">
                     <span class="game-meta-tag game-num-tag">Game ${gameNumber}</span>
                     <span class="game-meta-tag">${mapName}</span>
-                    <span class="game-meta-tag">${duration}</span>
                     ${teamScoreDisplay}
                 </div>
             </div>
@@ -1895,7 +1894,6 @@ function renderSearchGameCard(game, gameNumber, highlightPlayer = null) {
     html += '<div class="search-card-tags">';
     html += `<span class="game-meta-tag">Game ${gameNumber}</span>`;
     html += `<span class="game-meta-tag">${mapName}</span>`;
-    html += `<span class="game-meta-tag">${duration}</span>`;
     html += teamScoreHtml;
     html += '</div>';
     html += '</div>';
@@ -2338,7 +2336,7 @@ function showMedalBreakdown() {
     
     // Sort by most earned
     const sortedMedals = Object.entries(medalStats).sort((a, b) => b[1] - a[1]);
-    
+
     // Create modal to show medal breakdown
     let html = '<div class="weapon-breakdown-overlay" onclick="closeMedalBreakdown()">';
     html += '<div class="weapon-breakdown-modal" onclick="event.stopPropagation()">';
@@ -2347,7 +2345,11 @@ function showMedalBreakdown() {
     html += `<button class="modal-close" onclick="closeMedalBreakdown()">&times;</button>`;
     html += `</div>`;
     html += '<div class="weapon-breakdown-grid">';
-    
+
+    if (sortedMedals.length === 0) {
+        html += '<div class="no-data">No medal data available</div>';
+    }
+
     sortedMedals.forEach(([medal, count]) => {
         const iconUrl = getMedalIcon(medal);
         const percentage = ((count / Object.values(medalStats).reduce((a, b) => a + b, 0)) * 100).toFixed(1);
