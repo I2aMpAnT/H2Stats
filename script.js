@@ -226,13 +226,12 @@ function isValidTeam(team) {
 // Store playlist ranks per player: { playerName: { playlist1: rank, playlist2: rank, ... } }
 let playerPlaylistRanks = {};
 
-// Load ranks from rankstats.json
+// Load ranks from rankstats.json (pushed from server)
 async function loadPlayerRanks() {
     try {
         const response = await fetch('rankstats.json');
         if (!response.ok) {
-            console.log('[RANKS] No rankstats.json found, using fallback ranks');
-            generateFallbackRanks();
+            console.log('[RANKS] No rankstats.json found');
             return;
         }
         const rankData = await response.json();
@@ -276,39 +275,9 @@ async function loadPlayerRanks() {
         });
 
         console.log('[RANKS] Loaded ranks for', Object.keys(playerPlaylistRanks).length, 'players');
-
-        // Fill in any missing players with fallback ranks
-        generateFallbackRanks();
     } catch (error) {
         console.log('[RANKS] Error loading ranks:', error);
-        generateFallbackRanks();
     }
-}
-
-// Generate fallback ranks for players without rank data
-function generateFallbackRanks() {
-    const allPlayers = new Set();
-    gamesData.forEach(game => {
-        game.players.forEach(player => {
-            allPlayers.add(player.name);
-        });
-    });
-
-    const availableRanks = Array.from({length: 50}, (_, i) => i + 1);
-
-    // Shuffle ranks
-    for (let i = availableRanks.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [availableRanks[i], availableRanks[j]] = [availableRanks[j], availableRanks[i]];
-    }
-
-    let index = 0;
-    allPlayers.forEach(name => {
-        if (!playerRanks[name]) {
-            playerRanks[name] = availableRanks[index % availableRanks.length];
-            index++;
-        }
-    });
 }
 
 // Get playlist ranks for a player
@@ -316,9 +285,10 @@ function getPlayerPlaylistRanks(playerName) {
     return playerPlaylistRanks[playerName] || null;
 }
 
-// Get rank icon HTML for a player
+// Get rank icon HTML for a player (only if they have a rank in rankstats.json)
 function getPlayerRankIcon(playerName, size = 'small') {
-    const rank = playerRanks[playerName] || 1;
+    const rank = playerRanks[playerName];
+    if (!rank) return '';
     const sizeClass = size === 'small' ? 'rank-icon-small' : 'rank-icon';
     return `<img src="https://r2-cdn.insignia.live/h2-rank/${rank}.png" alt="Rank ${rank}" class="${sizeClass}" />`;
 }
