@@ -26,108 +26,108 @@
         { r: 175, g: 144, b: 87,  code: '26E0', name: 'Tan' }
     ];
 
-    // Foreground emblem filenames (index matches game's EF parameter from halo2pc.com)
-    // Order matches halo2pc.com emblem.php EF parameter values
+    // Foreground emblem filenames (index matches sprite sheet order, left-to-right, top-to-bottom)
     const foregroundFiles = [
-        'Seventh Column.png',   // 0 - EF=0
-        'Bullseye.png',         // 1 - EF=1
-        'Vortex.png',           // 2 - EF=2
-        'Halt.png',             // 3 - EF=3
-        'Spartan.png',          // 4 - EF=4
-        'Da Bomb.png',          // 5 - EF=5
-        'Sol.png',              // 6
-        'Double Crescent.png',  // 7
-        'Sergeant.png',         // 8
-        'Drone.png',            // 9
-        'Phoenix.png',          // 10 - EF=10
-        'Champion.png',         // 11 - EF=11
-        'Jolly Roger.png',      // 12 - EF=12
-        'Delta.png',            // 13
-        'Helmet.png',           // 14
-        'Cube.png',             // 15
-        'Cleave.png',           // 16
-        'Grunt.png',            // 17
-        'Radioactive.png',      // 18
-        'Smiley.png',           // 19
-        'Frowney.png',          // 20
-        'Triad.png',            // 21
-        'Waypoint.png',         // 22
-        'Trinity.png',          // 23
+        'Seventh Column.png',   // 0
+        'Bullseye.png',         // 1
+        'Vortex.png',           // 2
+        'Halt.png',             // 3
+        'Spartan.png',          // 4
+        'Da Bomb.png',          // 5
+        'Phoenix.png',          // 6
+        'Champion.png',         // 7
+        'Jolly Roger.png',      // 8
+        'Sergeant.png',         // 9
+        'Drone.png',            // 10
+        'Delta.png',            // 11
+        'Helmet.png',           // 12
+        'Marathon.png',         // 13
+        'Cube.png',             // 14
+        'Cleave.png',           // 15
+        'Grunt.png',            // 16
+        'Radioactive.png',      // 17
+        'Smiley.png',           // 18
+        'Frowney.png',          // 19
+        'Triad.png',            // 20
+        'Waypoint.png',         // 21
+        'Brute Head.png',       // 22
+        'Triplicate.png',       // 23
         'Ying Yang.png',        // 24
-        'Brute Head.png',       // 25
+        'Trinity.png',          // 25
         'Spearhead.png',        // 26
-        'Trident.png',          // 27
-        'Skull King.png',       // 28
-        'Triplicate.png',       // 29
-        'Subnova.png',          // 30
-        'Marathon.png',         // 31
-        'Valkyrie.png',         // 32
-        'Spades.png',           // 33
-        'Clubs.png',            // 34
-        'Diamonds.png',         // 35
-        'Hearts.png',           // 36
-        'Snake.png',            // 37
-        'Flaming Ninja.png',    // 38
-        'Rampancy.png',         // 39
-        'Hawk.png',             // 40
-        'Lips.png',             // 41
-        'Capsule.png',          // 42
-        'Race.png',             // 43
-        'Gas Mask.png',         // 44
-        'Grenade.png',          // 45
-        'Thor.png',             // 46
+        'Skull King.png',       // 27
+        'Trident.png',          // 28
+        'Subnova.png',          // 29
+        'Valkyrie.png',         // 30
+        'Spades.png',           // 31
+        'Clubs.png',            // 32
+        'Diamonds.png',         // 33
+        'Double Crescent.png',  // 34
+        'Hearts.png',           // 35
+        'Snake.png',            // 36
+        'Flaming Ninja.png',    // 37
+        'Rampancy.png',         // 38
+        'Hawk.png',             // 39
+        'Lips.png',             // 40
+        'Capsule.png',          // 41
+        'Race.png',             // 42
+        'Gas Mask.png',         // 43
+        'Grenade.png',          // 44
+        'Thor.png',             // 45
+        'Wasp.png',             // 46
         'Mark of Shame.png',    // 47
-        'Wasp.png',             // 48
+        'Sol.png',              // 48
         'Runes.png',            // 49
         'Grunt Head.png',       // 50
         'Tsantsa.png',          // 51
-        'Cancel.png',           // 52
-        'Number 0.png',         // 53
-        'Number 1.png',         // 54
-        'Number 2.png',         // 55
-        'Number 3.png',         // 56
-        'Number 4.png',         // 57
-        'Number 5.png',         // 58
-        'Number 6.png',         // 59
-        'Number 7.png',         // 60
-        'Number 8.png',         // 61
-        'Number 9.png'          // 62
+        'Grunt Symbol.png',     // 52
+        'Cancel.png',           // 53
+        'Number 0.png',         // 54
+        'Number 1.png',         // 55
+        'Number 2.png',         // 56
+        'Number 3.png',         // 57
+        'Number 4.png',         // 58
+        'Number 5.png',         // 59
+        'Number 6.png',         // 60
+        'Number 7.png',         // 61
+        'Number 8.png',         // 62
+        'Number 9.png'          // 63
     ];
 
-    // Background filenames (index matches halo2pc.com EB parameter values)
+    // Background filenames (index matches sprite sheet order, left-to-right, top-to-bottom)
     const backgroundFiles = [
-        'Solid.png',            // 0 - EB=0
-        'Vertical Split.png',   // 1 - EB=1
-        'Horizontal Split 1.png', // 2 - EB=2
-        'Horizontal Split 2.png', // 3 - EB=3
-        'Horizontal Gradient.png', // 4 - EB=4 (doesn't load in halo2pc)
-        'Vertical Gradient.png',  // 5 - EB=5 (doesn't load in halo2pc)
-        'Triple Column.png',    // 6 - EB=6
-        'Quadrants 1.png',      // 7
-        'DIagonal Slice.png',   // 8
-        'Cleft.png',            // 9
-        'X1.png',               // 10
-        'X2.png',               // 11
-        'Diamond.png',          // 12
-        'Cross.png',            // 13
-        'Square.png',           // 14
-        'Dual Half-Circle.png', // 15
-        'Diagonal Quadrant.png', // 16
-        'Three Quarters.png',   // 17
-        'Quarter.png',          // 18
-        'Four Rows 1.png',      // 19
-        'Split Circle.png',     // 20
-        'One Third.png',        // 21
-        'Two Thirds.png',       // 22
-        'Upper Field.png',      // 23
-        'Top and Bottom.png',   // 24
-        'Center Stripe.png',    // 25
-        'Left and Right.png',   // 26
-        'Circle.png',           // 27
-        'Triangle.png',         // 28
-        'Four Rows 2.png',      // 29
-        'Quadrants 2.png',      // 30
-        'Triple Row.png'        // 31
+        'Solid.png',            // 0
+        'Vertical Split.png',   // 1
+        'Horizontal Split 1.png', // 2
+        'Horizontal Split 2.png', // 3
+        'Horizontal Gradient.png', // 4
+        'Vertical Gradient.png',  // 5
+        'Triple Column.png',    // 6
+        'Triple Row.png',       // 7
+        'Quadrants 1.png',      // 8
+        'DIagonal Slice.png',   // 9
+        'Triangle.png',         // 10
+        'Cleft.png',            // 11
+        'X1.png',               // 12
+        'X2.png',               // 13
+        'Circle.png',           // 14
+        'Diamond.png',          // 15
+        'Cross.png',            // 16
+        'Square.png',           // 17
+        'Dual Half-Circle.png', // 18
+        'Three Quarters.png',   // 19
+        'Diagonal Quadrant.png', // 20
+        'Quarter.png',          // 21
+        'Split Circle.png',     // 22
+        'Four Rows 1.png',      // 23
+        'Four Rows 2.png',      // 24
+        'One Third.png',        // 25
+        'Two Thirds.png',       // 26
+        'Center Stripe.png',    // 27
+        'Left and Right.png',   // 28
+        'Top and Bottom.png',   // 29
+        'Upper Field.png',      // 30
+        'Quadrants 2.png'       // 31
     ];
 
     // Image cache for loaded images
