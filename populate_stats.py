@@ -532,57 +532,71 @@ def main():
 
     print(f"  Zeroed stats for {len(rankstats)} players")
 
-    # STEP 2: Find and parse games, determining playlist for each
+    # STEP 2: Find and parse ALL games, determining playlist for each
+    # ALL matches are logged for stats, but only playlist-tagged matches count for rank
     print("\nStep 2: Finding and categorizing games...")
     stats_files = sorted([f for f in os.listdir(STATS_DIR) if f.endswith('.xlsx')])
 
-    # Group games by playlist
+    # Store ALL games (for stats tracking)
+    all_games = []
+    # Group games by playlist (for ranking)
     games_by_playlist = {}
-    skipped_games = []
+    untagged_games = []
 
     for filename in stats_files:
         file_path = os.path.join(STATS_DIR, filename)
         playlist = determine_playlist(file_path, active_match)
 
-        if playlist:
-            game = parse_excel_file(file_path)
-            game['source_file'] = filename
-            game['playlist'] = playlist
+        game = parse_excel_file(file_path)
+        game['source_file'] = filename
+        game['playlist'] = playlist  # Will be None for untagged games
 
+        # ALL games go into all_games for stats tracking
+        all_games.append(game)
+
+        map_name = game['details'].get('Map Name', 'Unknown')
+        gametype = game['details'].get('Variant Name', 'Unknown')
+
+        if playlist:
             if playlist not in games_by_playlist:
                 games_by_playlist[playlist] = []
             games_by_playlist[playlist].append(game)
-
-            map_name = game['details'].get('Map Name', 'Unknown')
-            gametype = game['details'].get('Variant Name', 'Unknown')
-            print(f"  [{playlist}] {gametype} on {map_name}")
+            print(f"  [{playlist}] {gametype} on {map_name} - RANKED")
         else:
-            skipped_games.append(filename)
-            print(f"  Skipping (no matching playlist): {filename}")
+            untagged_games.append(game)
+            print(f"  [UNRANKED] {gametype} on {map_name} - stats only")
 
     # Summary
     print(f"\nGames categorized by playlist:")
     for playlist, games in games_by_playlist.items():
-        print(f"  {playlist}: {len(games)} games")
-    if skipped_games:
-        print(f"  Skipped: {len(skipped_games)} games")
+        print(f"  {playlist}: {len(games)} games (ranked)")
+    if untagged_games:
+        print(f"  Unranked (stats only): {len(untagged_games)} games")
+    print(f"  Total games: {len(all_games)}")
 
-    # For now, process MLG 4v4 games (can extend to other playlists later)
-    team_games = games_by_playlist.get(PLAYLIST_MLG_4V4, [])
-    team_games.extend(games_by_playlist.get(PLAYLIST_TEAM_HARDCORE, []))
+    # Ranked games are those with a valid playlist tag
+    ranked_games = games_by_playlist.get(PLAYLIST_MLG_4V4, [])
+    ranked_games.extend(games_by_playlist.get(PLAYLIST_TEAM_HARDCORE, []))
+    ranked_games.extend(games_by_playlist.get(PLAYLIST_DOUBLE_TEAM, []))
+    ranked_games.extend(games_by_playlist.get(PLAYLIST_HEAD_TO_HEAD, []))
 
-    print(f"\nTotal ranked games to process: {len(team_games)}")
+    print(f"\nTotal ranked games (for XP/rank): {len(ranked_games)}")
+    print(f"Total games (for stats): {len(all_games)}")
 
-    # STEP 3: Process games SEQUENTIALLY and update player stats
-    print("\nStep 3: Processing games sequentially (in order played)...")
+    # STEP 3: Process ALL games for stats, but only ranked games for XP
+    print("\nStep 3: Processing games (all for stats, ranked for XP)...")
 
-    # Track cumulative stats and XP per player
+    # Track cumulative stats per player (from ALL games)
     player_game_stats = {}
-    player_xp = {}  # Track XP separately for sequential calculation
+    # Track XP per playlist per player (only from ranked games)
+    player_playlist_xp = {}  # {player_name: {playlist: xp}}
+    player_playlist_wins = {}  # {player_name: {playlist: wins}}
+    player_playlist_losses = {}  # {player_name: {playlist: losses}}
+    player_playlist_games = {}  # {player_name: {playlist: games}}
 
-    # First, identify all players and match them to rankstats
+    # First, identify all players from ALL games and match them to rankstats
     all_player_names = set()
-    for game in team_games:
+    for game in all_games:
         for player in game['players']:
             all_player_names.add(player['name'])
 
@@ -610,66 +624,103 @@ def main():
                 'rank': 1
             }
 
-        # Initialize tracking
+        # Initialize overall stats tracking (from ALL games)
         player_game_stats[player_name] = {
             'kills': 0, 'deaths': 0, 'assists': 0,
-            'wins': 0, 'losses': 0, 'games': 0, 'headshots': 0
+            'games': 0, 'headshots': 0
         }
-        player_xp[player_name] = 0  # Start at 0 XP
+        # Initialize per-playlist tracking (only from ranked games)
+        player_playlist_xp[player_name] = {}
+        player_playlist_wins[player_name] = {}
+        player_playlist_losses[player_name] = {}
+        player_playlist_games[player_name] = {}
 
-    # Track current rank per player (starts at rank 1)
-    player_rank = {name: 1 for name in all_player_names}
+    # Track current rank per player per playlist
+    player_playlist_rank = {}  # {player_name: {playlist: rank}}
     # Track highest rank achieved per player per playlist
-    player_highest_rank = {name: 1 for name in all_player_names}
+    player_playlist_highest_rank = {}  # {player_name: {playlist: highest_rank}}
+    for name in all_player_names:
+        player_playlist_rank[name] = {}
+        player_playlist_highest_rank[name] = {}
 
     print(f"  Found {len(all_player_names)} unique players")
 
-    # Process each game in order
-    for game_num, game in enumerate(team_games, 1):
-        winners, losers = determine_winners_losers(game)
+    # STEP 3a: Process ALL games for stats (kills, deaths, etc.)
+    print("\n  Processing ALL games for stats...")
+    for game_num, game in enumerate(all_games, 1):
         game_name = game['details'].get('Variant Name', 'Unknown')
-        print(f"\n  Game {game_num}: {game_name}")
+        playlist = game.get('playlist')
+        playlist_tag = f"[{playlist}]" if playlist else "[UNRANKED]"
 
         for player in game['players']:
             player_name = player['name']
 
-            # Update cumulative stats
+            # Update cumulative stats from ALL games
             player_game_stats[player_name]['kills'] += player.get('kills', 0)
             player_game_stats[player_name]['deaths'] += player.get('deaths', 0)
             player_game_stats[player_name]['assists'] += player.get('assists', 0)
             player_game_stats[player_name]['headshots'] += player.get('head_shots', 0)
             player_game_stats[player_name]['games'] += 1
 
-            # Calculate XP change based on win/loss with rank-based factors
-            old_xp = player_xp[player_name]
-            current_rank = player_rank[player_name]
+    print(f"  Processed {len(all_games)} games for stats")
+
+    # STEP 3b: Process RANKED games for XP/wins/losses (per playlist)
+    print("\n  Processing RANKED games for XP (per playlist)...")
+    for game_num, game in enumerate(ranked_games, 1):
+        winners, losers = determine_winners_losers(game)
+        game_name = game['details'].get('Variant Name', 'Unknown')
+        playlist = game.get('playlist')
+
+        if not playlist:
+            continue  # Skip untagged games for ranking
+
+        print(f"\n  Ranked Game {game_num} [{playlist}]: {game_name}")
+
+        for player in game['players']:
+            player_name = player['name']
+
+            # Initialize playlist tracking if needed
+            if playlist not in player_playlist_xp[player_name]:
+                player_playlist_xp[player_name][playlist] = 0
+                player_playlist_wins[player_name][playlist] = 0
+                player_playlist_losses[player_name][playlist] = 0
+                player_playlist_games[player_name][playlist] = 0
+                player_playlist_rank[player_name][playlist] = 1
+                player_playlist_highest_rank[player_name][playlist] = 1
+
+            # Get current XP and rank for this playlist
+            old_xp = player_playlist_xp[player_name][playlist]
+            current_rank = player_playlist_rank[player_name][playlist]
 
             if player_name in winners:
-                player_game_stats[player_name]['wins'] += 1
+                player_playlist_wins[player_name][playlist] += 1
+                player_playlist_games[player_name][playlist] += 1
                 # Apply win factor (high ranks gain less)
                 win_factor = get_win_factor(current_rank, win_factors)
                 xp_change = int(xp_win * win_factor)
-                player_xp[player_name] += xp_change
+                player_playlist_xp[player_name][playlist] += xp_change
                 result = f"WIN (+{xp_change} @ {int(win_factor*100)}%)"
             elif player_name in losers:
-                player_game_stats[player_name]['losses'] += 1
+                player_playlist_losses[player_name][playlist] += 1
+                player_playlist_games[player_name][playlist] += 1
                 # Apply loss factor (low ranks lose less)
                 loss_factor = get_loss_factor(current_rank, loss_factors)
                 xp_change = int(xp_loss * loss_factor)  # xp_loss is negative
-                player_xp[player_name] += xp_change
+                player_playlist_xp[player_name][playlist] += xp_change
                 # Ensure XP cannot go below 0
-                if player_xp[player_name] < 0:
-                    player_xp[player_name] = 0
+                if player_playlist_xp[player_name][playlist] < 0:
+                    player_playlist_xp[player_name][playlist] = 0
                 result = f"LOSS ({xp_change} @ {int(loss_factor*100)}%)"
             else:
+                player_playlist_games[player_name][playlist] += 1
                 result = "TIE"
 
-            new_xp = player_xp[player_name]
+            new_xp = player_playlist_xp[player_name][playlist]
             new_rank = calculate_rank(new_xp, rank_thresholds)
-            player_rank[player_name] = new_rank  # Update rank for next game
-            # Track highest rank achieved during gameplay
-            if new_rank > player_highest_rank[player_name]:
-                player_highest_rank[player_name] = new_rank
+            player_playlist_rank[player_name][playlist] = new_rank
+            # Track highest rank achieved in this playlist
+            if new_rank > player_playlist_highest_rank[player_name][playlist]:
+                player_playlist_highest_rank[player_name][playlist] = new_rank
             print(f"    {player_name}: {result} | XP: {old_xp} -> {new_xp} | Rank: {new_rank}")
 
     # STEP 4: Update rankstats with final values
@@ -678,23 +729,70 @@ def main():
     for player_name in all_player_names:
         user_id = player_to_id[player_name]
         stats = player_game_stats[player_name]
-        final_xp = player_xp[player_name]
-        final_rank = calculate_rank(final_xp, rank_thresholds)
 
-        rankstats[user_id]['wins'] = stats['wins']
-        rankstats[user_id]['losses'] = stats['losses']
+        # Overall stats from ALL games
         rankstats[user_id]['total_games'] = stats['games']
         rankstats[user_id]['kills'] = stats['kills']
         rankstats[user_id]['deaths'] = stats['deaths']
         rankstats[user_id]['assists'] = stats['assists']
         rankstats[user_id]['headshots'] = stats['headshots']
-        rankstats[user_id]['xp'] = final_xp
-        rankstats[user_id]['rank'] = final_rank
-        # Store rank for each playlist the player participated in
-        # For now, default to MLG 4v4 (can be extended per-playlist later)
-        rankstats[user_id][PLAYLIST_MLG_4V4] = final_rank
-        # Use highest rank tracked during gameplay (not just final rank)
-        rankstats[user_id]['highest_rank'] = player_highest_rank[player_name]
+
+        # Calculate total wins/losses across all playlists (for legacy compatibility)
+        total_wins = sum(player_playlist_wins[player_name].values())
+        total_losses = sum(player_playlist_losses[player_name].values())
+        total_ranked_games = sum(player_playlist_games[player_name].values())
+
+        rankstats[user_id]['wins'] = total_wins
+        rankstats[user_id]['losses'] = total_losses
+
+        # Per-playlist ranking data
+        playlists_data = {}
+        overall_highest_rank = 1
+        primary_playlist = None
+        primary_xp = 0
+
+        for playlist in player_playlist_xp[player_name]:
+            playlist_xp = player_playlist_xp[player_name][playlist]
+            playlist_rank = calculate_rank(playlist_xp, rank_thresholds)
+            playlist_highest = player_playlist_highest_rank[player_name].get(playlist, 1)
+            playlist_wins = player_playlist_wins[player_name].get(playlist, 0)
+            playlist_losses = player_playlist_losses[player_name].get(playlist, 0)
+            playlist_games = player_playlist_games[player_name].get(playlist, 0)
+
+            playlists_data[playlist] = {
+                'xp': playlist_xp,
+                'rank': playlist_rank,
+                'highest_rank': playlist_highest,
+                'wins': playlist_wins,
+                'losses': playlist_losses,
+                'games': playlist_games
+            }
+
+            # Store flat rank for each playlist (legacy compatibility)
+            rankstats[user_id][playlist] = playlist_rank
+
+            # Track highest rank across all playlists
+            if playlist_highest > overall_highest_rank:
+                overall_highest_rank = playlist_highest
+
+            # Primary playlist is the one with most XP
+            if playlist_xp > primary_xp:
+                primary_xp = playlist_xp
+                primary_playlist = playlist
+
+        # Store playlist details
+        rankstats[user_id]['playlists'] = playlists_data
+
+        # For legacy compatibility: use primary playlist's XP/rank as the main one
+        if primary_playlist:
+            rankstats[user_id]['xp'] = primary_xp
+            rankstats[user_id]['rank'] = calculate_rank(primary_xp, rank_thresholds)
+        else:
+            # No ranked games played
+            rankstats[user_id]['xp'] = 0
+            rankstats[user_id]['rank'] = 1
+
+        rankstats[user_id]['highest_rank'] = overall_highest_rank
 
     # STEP 5: Save all data files
     print("\nStep 5: Saving data files...")
@@ -703,15 +801,15 @@ def main():
         json.dump(rankstats, f, indent=2)
     print(f"  Saved {RANKSTATS_FILE}")
 
-    # Games already have their playlist set from determine_playlist()
-
+    # Save ALL games to gameshistory.json (includes ranked and unranked)
+    # Games have their playlist set from determine_playlist() - None for unranked
     with open(GAMESDATA_FILE, 'w') as f:
-        json.dump(team_games, f, indent=2)
-    print(f"  Saved {GAMESDATA_FILE}")
+        json.dump(all_games, f, indent=2)
+    print(f"  Saved {GAMESDATA_FILE} ({len(all_games)} total games)")
 
-    # Create gamestats.json
+    # Create gamestats.json (includes all games)
     gamestats = {}
-    for i, game in enumerate(team_games, 1):
+    for i, game in enumerate(all_games, 1):
         match_key = f"match_{i}"
         gamestats[match_key] = {
             "game_1": {
@@ -719,7 +817,8 @@ def main():
                 'gametype': game['details'].get('Variant Name', 'Unknown'),
                 'game_type': game['details'].get('Game Type', 'Unknown'),
                 'timestamp': game['details'].get('Start Time', ''),
-                'duration': game['details'].get('Duration', '')
+                'duration': game['details'].get('Duration', ''),
+                'playlist': game.get('playlist')  # None for unranked games
             }
         }
 
@@ -727,21 +826,23 @@ def main():
         json.dump(gamestats, f, indent=2)
     print(f"  Saved {GAMESTATS_FILE}")
 
-    # Create matchhistory.json
+    # Create matchhistory.json (includes all games with proper tagging)
     matchhistory = {
-        'total_ranked_matches': len(team_games),
+        'total_matches': len(all_games),
+        'total_ranked_matches': len(ranked_games),
         'matches': []
     }
 
-    for i, game in enumerate(team_games, 1):
+    for i, game in enumerate(all_games, 1):
         winners, losers = determine_winners_losers(game)
         red_team = [p['name'] for p in game['players'] if p.get('team') == 'Red']
         blue_team = [p['name'] for p in game['players'] if p.get('team') == 'Blue']
+        playlist = game.get('playlist')
 
         match_entry = {
             'match_number': i,
-            'match_type': 'RANKED',
-            'playlist': game.get('playlist', PLAYLIST_MLG_4V4),
+            'match_type': 'RANKED' if playlist else 'UNRANKED',
+            'playlist': playlist,  # None for unranked games
             'timestamp': game['details'].get('Start Time', ''),
             'map': game['details'].get('Map Name', 'Unknown'),
             'gametype': game['details'].get('Variant Name', 'Unknown'),
@@ -760,20 +861,27 @@ def main():
     print("\n" + "=" * 50)
     print("STATS POPULATION SUMMARY")
     print("=" * 50)
-    # Count games by playlist
-    playlist_counts = {}
-    for game in team_games:
-        pl = game.get('playlist', PLAYLIST_MLG_4V4)
-        playlist_counts[pl] = playlist_counts.get(pl, 0) + 1
-    for pl, count in playlist_counts.items():
-        print(f"  {pl}: {count} games")
-    print(f"Total ranked games processed: {len(team_games)}")
-    print(f"Total players with game data: {len(player_game_stats)}")
+    print(f"\nGames Summary:")
+    print(f"  Total games (stats tracked): {len(all_games)}")
+    print(f"  Ranked games (XP/rank counts): {len(ranked_games)}")
+    print(f"  Unranked games (stats only): {len(untagged_games)}")
 
-    print(f"\nRankings:")
-    ranked = [(uid, d) for uid, d in rankstats.items() if d.get('wins', 0) > 0 or d.get('losses', 0) > 0]
-    ranked.sort(key=lambda x: (x[1].get('rank', 0), x[1].get('wins', 0)), reverse=True)
-    for uid, d in ranked[:15]:
+    # Count ranked games by playlist
+    print(f"\nRanked Games by Playlist:")
+    playlist_counts = {}
+    for game in ranked_games:
+        pl = game.get('playlist')
+        if pl:
+            playlist_counts[pl] = playlist_counts.get(pl, 0) + 1
+    for pl, count in sorted(playlist_counts.items()):
+        print(f"  {pl}: {count} games")
+
+    print(f"\nTotal players with game data: {len(player_game_stats)}")
+
+    print(f"\nTop Rankings (by primary playlist):")
+    ranked_players = [(uid, d) for uid, d in rankstats.items() if d.get('wins', 0) > 0 or d.get('losses', 0) > 0]
+    ranked_players.sort(key=lambda x: (x[1].get('rank', 0), x[1].get('wins', 0)), reverse=True)
+    for uid, d in ranked_players[:15]:
         name = d.get('discord_name', 'Unknown')
         rank = d.get('rank', 1)
         xp = d.get('xp', 0)
@@ -783,7 +891,7 @@ def main():
 
     # STEP 6: Update HTML file with embedded data
     print("\nStep 6: Updating HTML file...")
-    update_html_file(team_games, rankstats)
+    update_html_file(all_games, rankstats)
 
     print("\nDone!")
 
