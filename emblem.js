@@ -263,9 +263,8 @@
         tempCanvas.height = size;
         const tempCtx = tempCanvas.getContext('2d');
 
-        // Enable image smoothing for better quality
-        tempCtx.imageSmoothingEnabled = true;
-        tempCtx.imageSmoothingQuality = 'high';
+        // Disable image smoothing for crisp pixel edges
+        tempCtx.imageSmoothingEnabled = false;
         tempCtx.drawImage(img, 0, 0, size, size);
 
         const imageData = tempCtx.getImageData(0, 0, size, size);
@@ -310,9 +309,8 @@
         tempCanvas.height = size;
         const tempCtx = tempCanvas.getContext('2d');
 
-        // Enable image smoothing
-        tempCtx.imageSmoothingEnabled = true;
-        tempCtx.imageSmoothingQuality = 'high';
+        // Disable image smoothing for crisp pixel edges
+        tempCtx.imageSmoothingEnabled = false;
         tempCtx.drawImage(img, 0, 0, size, size);
 
         const imageData = tempCtx.getImageData(0, 0, size, size);

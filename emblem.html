@@ -104,8 +104,7 @@
             tempCanvas.width = size;
             tempCanvas.height = size;
             const tempCtx = tempCanvas.getContext('2d');
-            tempCtx.imageSmoothingEnabled = true;
-            tempCtx.imageSmoothingQuality = 'high';
+            tempCtx.imageSmoothingEnabled = false;
             tempCtx.drawImage(img, 0, 0, size, size);
 
             const imageData = tempCtx.getImageData(0, 0, size, size);
@@ -146,8 +145,7 @@
             tempCanvas.width = size;
             tempCanvas.height = size;
             const tempCtx = tempCanvas.getContext('2d');
-            tempCtx.imageSmoothingEnabled = true;
-            tempCtx.imageSmoothingQuality = 'high';
+            tempCtx.imageSmoothingEnabled = false;
             tempCtx.drawImage(img, 0, 0, size, size);
 
             const imageData = tempCtx.getImageData(0, 0, size, size);
