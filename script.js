@@ -246,14 +246,19 @@ async function loadPlayerRanks() {
             if (value.discord_name || value.alias) {
                 // Legacy format with discord_name/alias
                 playerName = value.alias || value.discord_name;
-                // Convert MMR to rank (1-50 scale)
-                if (value.mmr) {
+                // Use the rank field directly if it exists, otherwise calculate from MMR
+                if (value.rank) {
+                    ranks['Overall'] = value.rank;
+                } else if (value.mmr) {
                     const rank = Math.min(50, Math.max(1, Math.round((value.mmr - 500) / 20)));
                     ranks['Overall'] = rank;
                 }
-                // Check for playlist-specific ranks
+                // Check for playlist-specific ranks (exclude all stat fields)
+                const excludedFields = ['xp', 'wins', 'losses', 'mmr', 'total_games', 'series_wins', 'series_losses',
+                    'total_series', 'rank', 'highest_rank', 'kills', 'deaths', 'assists', 'headshots',
+                    'discord_name', 'twitch_name', 'twitch_url', 'alias'];
                 Object.keys(value).forEach(k => {
-                    if (typeof value[k] === 'number' && !['xp', 'wins', 'losses', 'mmr', 'total_games', 'series_wins', 'series_losses', 'total_series'].includes(k)) {
+                    if (typeof value[k] === 'number' && !excludedFields.includes(k)) {
                         ranks[k] = value[k];
                     }
                 });

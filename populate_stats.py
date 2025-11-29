@@ -349,6 +349,8 @@ def main():
 
     # Track current rank per player (starts at rank 1)
     player_rank = {name: 1 for name in all_player_names}
+    # Track highest rank achieved per player per playlist
+    player_highest_rank = {name: 1 for name in all_player_names}
 
     print(f"  Found {len(all_player_names)} unique players")
 
@@ -395,6 +397,9 @@ def main():
             new_xp = player_xp[player_name]
             new_rank = calculate_rank(new_xp, rank_thresholds)
             player_rank[player_name] = new_rank  # Update rank for next game
+            # Track highest rank achieved during gameplay
+            if new_rank > player_highest_rank[player_name]:
+                player_highest_rank[player_name] = new_rank
             print(f"    {player_name}: {result} | XP: {old_xp} -> {new_xp} | Rank: {new_rank}")
 
     # STEP 4: Update rankstats with final values
@@ -416,9 +421,8 @@ def main():
         rankstats[user_id]['xp'] = final_xp
         rankstats[user_id]['rank'] = final_rank
         rankstats[user_id][PLAYLIST_NAME] = final_rank
-        # Track highest rank achieved
-        current_highest = rankstats[user_id].get('highest_rank', 1)
-        rankstats[user_id]['highest_rank'] = max(current_highest, final_rank)
+        # Use highest rank tracked during gameplay (not just final rank)
+        rankstats[user_id]['highest_rank'] = player_highest_rank[player_name]
 
     # STEP 5: Save all data files
     print("\nStep 5: Saving data files...")
