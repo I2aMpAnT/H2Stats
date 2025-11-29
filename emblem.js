@@ -255,7 +255,7 @@
     }
 
     // Draw background with player colors
-    // Background PNGs use: white/light areas → Primary Player Color, blue areas → Secondary Player Color
+    // Background PNGs use: white → Primary Player Color, blue → Secondary Player Color
     function drawBackground(ctx, img, primaryColor, secondaryColor) {
         const tempCanvas = document.createElement('canvas');
         const size = 256;
@@ -283,10 +283,10 @@
                 data[i + 1] = primaryColor.g;
                 data[i + 2] = primaryColor.b;
             } else {
-                // Background PNGs use white-to-blue gradient/split:
-                // - White (255,255,255) → Primary color
-                // - Blue (0,0,255) → Secondary color
-                // The R and G channels determine position (B stays ~255)
+                // Background PNGs use blue and white:
+                // - White pixels → Primary Player Color
+                // - Blue pixels → Secondary Player Color
+                // Detect blue vs white by checking if r,g are low (blue) or high (white)
                 const primaryWeight = Math.min(r, g) / 255;
                 const secondaryWeight = 1 - primaryWeight;
 
