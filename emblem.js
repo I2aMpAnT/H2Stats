@@ -1,140 +1,252 @@
-// Emblem Generator JavaScript
-// Add this script to your index.html before </body>
+// Emblem Generator JavaScript - Individual Image Version
+// Uses individual PNG files instead of sprite sheets
+// Supports 4-color system: Emblem Primary/Secondary, Background Primary/Secondary
 
 (function() {
     // Halo 2 emblem color palette (accurate colors from in-game color blocks)
+    // Index matches the color block BMP file codes
     const colorPalette = [
-        { r: 255, g: 255, b: 255 }, // 0: White (10E0)
-        { r: 110, g: 110, b: 110 }, // 1: Steel (11E0)
-        { r: 189, g: 43,  b: 44  }, // 2: Red (12E0)
-        { r: 244, g: 123, b: 32  }, // 3: Orange (13E0)
-        { r: 244, g: 209, b: 45  }, // 4: Gold (14E0)
-        { r: 158, g: 169, b: 90  }, // 5: Olive (15E0)
-        { r: 35,  g: 145, b: 46  }, // 6: Green (16E0)
-        { r: 36,  g: 87,  b: 70  }, // 7: Sage (17E0)
-        { r: 22,  g: 160, b: 160 }, // 8: Cyan (18E0)
-        { r: 55,  g: 115, b: 123 }, // 9: Teal (27E0)
-        { r: 32,  g: 113, b: 178 }, // 10: Cobalt (19E0)
-        { r: 45,  g: 60,  b: 180 }, // 11: Blue (1FE0)
-        { r: 108, g: 80,  b: 182 }, // 12: Violet (20E0)
-        { r: 148, g: 39,  b: 132 }, // 13: Purple (22E0)
-        { r: 248, g: 155, b: 200 }, // 14: Pink (23E0)
-        { r: 156, g: 15,  b: 68  }, // 15: Crimson (24E0)
-        { r: 120, g: 73,  b: 43  }, // 16: Brown (25E0)
-        { r: 175, g: 144, b: 87  }  // 17: Tan (26E0)
+        { r: 255, g: 255, b: 255, code: '10E0', name: 'White' },
+        { r: 110, g: 110, b: 110, code: '11E0', name: 'Steel' },
+        { r: 189, g: 43,  b: 44,  code: '12E0', name: 'Red' },
+        { r: 244, g: 123, b: 32,  code: '13E0', name: 'Orange' },
+        { r: 244, g: 209, b: 45,  code: '14E0', name: 'Gold' },
+        { r: 158, g: 169, b: 90,  code: '15E0', name: 'Olive' },
+        { r: 35,  g: 145, b: 46,  code: '16E0', name: 'Green' },
+        { r: 36,  g: 87,  b: 70,  code: '17E0', name: 'Sage' },
+        { r: 22,  g: 160, b: 160, code: '18E0', name: 'Cyan' },
+        { r: 55,  g: 115, b: 123, code: '27E0', name: 'Teal' },
+        { r: 32,  g: 113, b: 178, code: '19E0', name: 'Cobalt' },
+        { r: 45,  g: 60,  b: 180, code: '1FE0', name: 'Blue' },
+        { r: 108, g: 80,  b: 182, code: '20E0', name: 'Violet' },
+        { r: 148, g: 39,  b: 132, code: '22E0', name: 'Purple' },
+        { r: 248, g: 155, b: 200, code: '23E0', name: 'Pink' },
+        { r: 156, g: 15,  b: 68,  code: '24E0', name: 'Crimson' },
+        { r: 120, g: 73,  b: 43,  code: '25E0', name: 'Brown' },
+        { r: 175, g: 144, b: 87,  code: '26E0', name: 'Tan' }
     ];
 
-    let foregroundSprite = null;
-    let backgroundSprite = null;
-    let spritesLoaded = false;
+    // Foreground emblem filenames (index matches game's EF parameter from halo2pc.com)
+    // Order matches sprite sheet: 64 emblems (0-63), numbers at 54-63
+    const foregroundFiles = [
+        'Sol.png',              // 0
+        'Bullseye.png',         // 1
+        'Double Crescent.png',  // 2
+        'Halt.png',             // 3
+        'Phoenix.png',          // 4
+        'Champion.png',         // 5
+        'Sergeant.png',         // 6
+        'Drone.png',            // 7
+        'Spartan.png',          // 8
+        'Delta.png',            // 9
+        'Helmet.png',           // 10
+        'Grunt Symbol.png',     // 11 (Seventh Column position)
+        'Cube.png',             // 12
+        'Cleave.png',           // 13
+        'Grunt.png',            // 14
+        'Radioactive.png',      // 15
+        'Smiley.png',           // 16
+        'Frowney.png',          // 17
+        'Triad.png',            // 18
+        'Waypoint.png',         // 19
+        'Trinity.png',          // 20
+        'Ying Yang.png',        // 21
+        'Brute Head.png',       // 22
+        'Vortex.png',           // 23
+        'Spearhead.png',        // 24
+        'Trident.png',          // 25
+        'Skull King.png',       // 26
+        'Triplicate.png',       // 27
+        'Subnova.png',          // 28
+        'Marathon.png',         // 29
+        'Valkyrie.png',         // 30
+        'Spades.png',           // 31
+        'Clubs.png',            // 32
+        'Diamonds.png',         // 33
+        'Hearts.png',           // 34
+        'Snake.png',            // 35
+        'Flaming Ninja.png',    // 36
+        'Rampancy.png',         // 37
+        'Hawk.png',             // 38
+        'Lips.png',             // 39
+        'Capsule.png',          // 40
+        'Race.png',             // 41
+        'Gas Mask.png',         // 42
+        'Grenade.png',          // 43
+        'Thor.png',             // 44
+        'Mark of Shame.png',    // 45
+        'Wasp.png',             // 46
+        'Da Bomb.png',          // 47
+        'Runes.png',            // 48
+        'Grunt Head.png',       // 49
+        'Tsantsa.png',          // 50
+        'Cancel.png',           // 51
+        'Jolly Roger.png',      // 52
+        'Number 0.png',         // 53
+        'Number 1.png',         // 54
+        'Number 2.png',         // 55
+        'Number 3.png',         // 56
+        'Number 4.png',         // 57
+        'Number 5.png',         // 58
+        'Number 6.png',         // 59
+        'Number 7.png',         // 60
+        'Number 8.png',         // 61
+        'Number 9.png'          // 62
+    ];
 
-    function loadSprites() {
-        const fg = new Image();
-        const bg = new Image();
-        let loadedCount = 0;
+    // Background filenames (index matches dropdown value)
+    const backgroundFiles = [
+        'Solid.png', 'Vertical Split.png', 'Horizontal Split 1.png',
+        'Horizontal Split 2.png', 'Horizontal Gradient.png', 'Vertical Gradient.png',
+        'Triple Row.png', 'Quadrants 1.png', 'DIagonal Slice.png',
+        'Cleft.png', 'X1.png', 'X2.png', 'Diamond.png', 'Cross.png',
+        'Square.png', 'Dual Half-Circle.png', 'Diagonal Quadrant.png',
+        'Three Quarters.png', 'Quarter.png', 'Four Rows 1.png',
+        'Split Circle.png', 'One Third.png', 'Two Thirds.png',
+        'Upper Field.png', 'Top and Bottom.png', 'Center Stripe.png',
+        'Left and Right.png', 'Circle.png', 'Triangle.png',
+        'Four Rows 2.png', 'Quadrants 2.png', 'Triple Column.png'
+    ];
 
-        fg.onload = () => {
-            foregroundSprite = fg;
-            loadedCount++;
-            if (loadedCount === 2) {
-                spritesLoaded = true;
-                updateEmblem();
+    // Image cache for loaded images
+    const imageCache = {};
+
+    // Load a single image and cache it
+    function loadImage(path) {
+        return new Promise((resolve, reject) => {
+            if (imageCache[path]) {
+                resolve(imageCache[path]);
+                return;
             }
-        };
-
-        bg.onload = () => {
-            backgroundSprite = bg;
-            loadedCount++;
-            if (loadedCount === 2) {
-                spritesLoaded = true;
-                updateEmblem();
-            }
-        };
-
-        fg.onerror = () => console.error('Failed to load emblem foregrounds');
-        bg.onerror = () => console.error('Failed to load emblem backgrounds');
-
-        fg.src = 'emblems/Emblem%20Foregrounds.png';
-        bg.src = 'emblems/Emblem%20Backgrounds.png';
+            const img = new Image();
+            img.onload = () => {
+                imageCache[path] = img;
+                resolve(img);
+            };
+            img.onerror = () => {
+                console.error('Failed to load:', path);
+                reject(new Error('Failed to load: ' + path));
+            };
+            img.src = path;
+        });
     }
 
-    window.updateEmblem = function() {
-        if (!spritesLoaded) return;
+    // Initialize color picker grids with BMP images
+    function initColorPickers() {
+        const pickers = document.querySelectorAll('.color-picker');
+        pickers.forEach(picker => {
+            const targetId = picker.dataset.target;
+            const input = document.getElementById(targetId);
+            if (!input) return;
 
+            picker.innerHTML = '';
+            colorPalette.forEach((color, index) => {
+                const swatch = document.createElement('div');
+                swatch.className = 'color-swatch';
+                swatch.dataset.value = index;
+                swatch.title = color.name;
+                // Use BMP as background image
+                swatch.style.backgroundImage = `url('emblems/color%20blocks/${color.code}.bmp')`;
+                // Fallback to solid color if BMP fails
+                swatch.style.backgroundColor = `rgb(${color.r}, ${color.g}, ${color.b})`;
+
+                if (parseInt(input.value) === index) {
+                    swatch.classList.add('selected');
+                }
+
+                swatch.addEventListener('click', () => {
+                    // Remove selection from siblings
+                    picker.querySelectorAll('.color-swatch').forEach(s => s.classList.remove('selected'));
+                    swatch.classList.add('selected');
+                    input.value = index;
+                    updateEmblem();
+                });
+
+                picker.appendChild(swatch);
+            });
+        });
+    }
+
+    // Preload essential images for faster initial render
+    async function preloadImages() {
+        try {
+            const defaultFg = 'emblems/embems/' + encodeURIComponent(foregroundFiles[37]); // Rampancy
+            const defaultBg = 'emblems/backgrounds/' + encodeURIComponent(backgroundFiles[5]);
+            await Promise.all([loadImage(defaultFg), loadImage(defaultBg)]);
+            updateEmblem();
+        } catch (e) {
+            console.error('Error preloading images:', e);
+            updateEmblem();
+        }
+    }
+
+    // Smooth interpolation helper
+    function smoothstep(edge0, edge1, x) {
+        const t = Math.max(0, Math.min(1, (x - edge0) / (edge1 - edge0)));
+        return t * t * (3 - 2 * t);
+    }
+
+    // Linear interpolation
+    function lerp(a, b, t) {
+        return a + (b - a) * t;
+    }
+
+    window.updateEmblem = async function() {
         const canvas = document.getElementById('emblemCanvas');
         if (!canvas) return;
 
         const ctx = canvas.getContext('2d');
-        const emblemPrimary = parseInt(document.getElementById('emblemPrimary').value);
-        const emblemSecondary = parseInt(document.getElementById('emblemSecondary').value);
-        const emblemForeground = parseInt(document.getElementById('emblemForeground').value);
-        const emblemBackground = parseInt(document.getElementById('emblemBackground').value);
-        const emblemToggle = document.getElementById('emblemToggle').checked ? 1 : 0;
+
+        // Get all 4 colors
+        const emblemPrimary = parseInt(document.getElementById('emblemPrimary')?.value || 1);
+        const emblemSecondary = parseInt(document.getElementById('emblemSecondary')?.value || 0);
+        const bgPrimary = parseInt(document.getElementById('bgPrimary')?.value || 11);
+        const bgSecondary = parseInt(document.getElementById('bgSecondary')?.value || 0);
+        const emblemForeground = parseInt(document.getElementById('emblemForeground')?.value || 0);
+        const emblemBackground = parseInt(document.getElementById('emblemBackground')?.value || 0);
+        const emblemToggle = document.getElementById('emblemToggle')?.checked ? 1 : 0;
 
         // Clear canvas with black background
         ctx.fillStyle = '#000000';
         ctx.fillRect(0, 0, 256, 256);
 
-        const foregroundCols = 4;
-        const backgroundCols = 4;
+        // Get file paths
+        const fgFile = foregroundFiles[emblemForeground] || foregroundFiles[0];
+        const bgFile = backgroundFiles[emblemBackground] || backgroundFiles[0];
+        const fgPath = 'emblems/embems/' + encodeURIComponent(fgFile);
+        const bgPath = 'emblems/backgrounds/' + encodeURIComponent(bgFile);
 
-        // Sprite sheet dimensions:
-        // Foregrounds: 1030 x 6028, 58 items in 4 columns (16 rows including numbers)
-        // Backgrounds: 1030 x 2088, 27 items (7 rows), has title header
-        // Each cell has ~2px grid lines around it that need to be excluded
-        const gridLineWidth = 3; // Padding to exclude grid lines from extraction
+        try {
+            const [fgImg, bgImg] = await Promise.all([
+                loadImage(fgPath),
+                loadImage(bgPath)
+            ]);
 
-        // Background sprite dimensions (title header ~24px)
-        const bgCellWidth = Math.floor(1030 / 4);           // 257
-        const bgHeaderOffset = 24;
-        const bgCellHeight = Math.floor((2088 - bgHeaderOffset) / 7);  // ~295
-        // Actual usable area after excluding grid lines
-        const bgUsableWidth = bgCellWidth - gridLineWidth * 2;
-        const bgUsableHeight = bgCellHeight - gridLineWidth * 2;
+            // Draw background with background colors
+            drawBackground(ctx, bgImg, colorPalette[bgPrimary], colorPalette[bgSecondary]);
 
-        // Foreground sprite dimensions
-        // 15 rows of emblems (58 items total: 48 symbols + 10 numbers)
-        // Header text takes ~24px, footer attribution ~140px
-        const fgCellWidth = Math.floor(1030 / 4);           // 257
-        const fgHeaderOffset = 24;
-        const fgFooterOffset = 140;
-        const fgContentHeight = 6028 - fgHeaderOffset - fgFooterOffset; // ~5864
-        const fgCellHeight = Math.floor(fgContentHeight / 15);  // ~390
-        // Actual usable area after excluding grid lines
-        const fgUsableWidth = fgCellWidth - gridLineWidth * 2;
-        const fgUsableHeight = fgCellHeight - gridLineWidth * 2;
-        // Crop to centered square for better emblem extraction
-        const fgEmblemSize = Math.min(fgUsableWidth, fgUsableHeight);
-
-        // Draw background first (primary color on blue areas, secondary on white areas)
-        const bgRow = Math.floor(emblemBackground / backgroundCols);
-        const bgCol = emblemBackground % backgroundCols;
-        // Add grid line offset to start inside the usable area
-        const bgX = bgCol * bgCellWidth + gridLineWidth;
-        const bgY = bgHeaderOffset + bgRow * bgCellHeight + gridLineWidth;
-
-        drawBackground(ctx, bgX, bgY, bgUsableWidth, bgUsableHeight, colorPalette[emblemPrimary], colorPalette[emblemSecondary]);
-
-        // Draw foreground on top
-        const fgRow = Math.floor(emblemForeground / foregroundCols);
-        const fgCol = emblemForeground % foregroundCols;
-        // Extract square region from each cell (emblems are roughly square), add grid line offset
-        const fgX = fgCol * fgCellWidth + gridLineWidth;
-        const fgY = fgHeaderOffset + fgRow * fgCellHeight + gridLineWidth;
-
-        // Toggle only hides the primary color, secondary still shows
-        drawForeground(ctx, fgX, fgY, fgEmblemSize, fgEmblemSize, colorPalette[emblemPrimary], colorPalette[emblemSecondary], emblemToggle);
+            // Draw foreground with emblem colors
+            drawForeground(ctx, fgImg, colorPalette[emblemPrimary], colorPalette[emblemSecondary], emblemToggle);
+        } catch (e) {
+            console.error('Error rendering emblem:', e);
+        }
     }
 
     // Draw background - blue pixels get primary color, white areas get secondary color
-    function drawBackground(ctx, sx, sy, width, height, primaryColor, secondaryColor) {
+    // Smooth gradient blending based on color channels
+    function drawBackground(ctx, img, primaryColor, secondaryColor) {
         const tempCanvas = document.createElement('canvas');
-        tempCanvas.width = width;
-        tempCanvas.height = height;
+        const size = 256;
+        tempCanvas.width = size;
+        tempCanvas.height = size;
         const tempCtx = tempCanvas.getContext('2d');
 
-        tempCtx.drawImage(backgroundSprite, sx, sy, width, height, 0, 0, width, height);
-        const imageData = tempCtx.getImageData(0, 0, width, height);
+        // Enable image smoothing for better quality
+        tempCtx.imageSmoothingEnabled = true;
+        tempCtx.imageSmoothingQuality = 'high';
+        tempCtx.drawImage(img, 0, 0, size, size);
+
+        const imageData = tempCtx.getImageData(0, 0, size, size);
         const data = imageData.data;
 
         for (let i = 0; i < data.length; i += 4) {
@@ -142,96 +254,49 @@
             const g = data[i + 1];
             const b = data[i + 2];
 
-            // Check if pixel is blue (primary area)
-            if (b > 200 && r < 100 && g < 100) {
-                // Blue pixel -> Primary color
-                const intensity = b / 255;
-                data[i] = primaryColor.r * intensity;
-                data[i + 1] = primaryColor.g * intensity;
-                data[i + 2] = primaryColor.b * intensity;
-                data[i + 3] = 255;
-            } else if (r > 200 && g > 200 && b > 200) {
-                // White/light pixel -> Secondary color
-                const intensity = (r + g + b) / (255 * 3);
-                data[i] = secondaryColor.r * intensity;
-                data[i + 1] = secondaryColor.g * intensity;
-                data[i + 2] = secondaryColor.b * intensity;
-                data[i + 3] = 255;
-            } else {
-                // Other pixels (gradients, etc) - blend based on blue channel
-                const blueRatio = b / 255;
-                const whiteRatio = Math.min(r, g) / 255;
+            // Background images use blue (0,0,255) for primary and white (255,255,255) for secondary
+            // Calculate blend ratio: how much "blue" vs "white" is in this pixel
+            // Blue has high B, low R and G. White has high R, G, and B.
+            // The key differentiator is the R and G channels - higher means more white/secondary
 
-                data[i] = primaryColor.r * blueRatio + secondaryColor.r * whiteRatio * (1 - blueRatio);
-                data[i + 1] = primaryColor.g * blueRatio + secondaryColor.g * whiteRatio * (1 - blueRatio);
-                data[i + 2] = primaryColor.b * blueRatio + secondaryColor.b * whiteRatio * (1 - blueRatio);
-                data[i + 3] = 255;
-            }
+            const rgAvg = (r + g) / 2;
+            const blueExcess = Math.max(0, b - rgAvg);
+            const whiteAmount = rgAvg / 255;
+
+            // Blend factor: 0 = pure primary (blue), 1 = pure secondary (white)
+            // Use the average of R and G to determine how "white" the pixel is
+            let t = whiteAmount;
+
+            // Apply smooth interpolation for gradients
+            t = smoothstep(0, 1, t);
+
+            // Lerp between primary and secondary colors
+            data[i] = Math.round(lerp(primaryColor.r, secondaryColor.r, t));
+            data[i + 1] = Math.round(lerp(primaryColor.g, secondaryColor.g, t));
+            data[i + 2] = Math.round(lerp(primaryColor.b, secondaryColor.b, t));
+            data[i + 3] = 255;
         }
 
         tempCtx.putImageData(imageData, 0, 0);
-        ctx.drawImage(tempCanvas, 0, 0, width, height, 0, 0, 256, 256);
-    }
-
-    // Find the bounding box of non-black pixels in an image region
-    // Returns { minX, minY, maxX, maxY } or null if no content found
-    function findEmblemBounds(imageData, width, height, threshold = 40) {
-        const data = imageData.data;
-        let minX = width, minY = height, maxX = 0, maxY = 0;
-        let foundContent = false;
-
-        for (let y = 0; y < height; y++) {
-            for (let x = 0; x < width; x++) {
-                const i = (y * width + x) * 4;
-                const r = data[i];
-                const g = data[i + 1];
-                const b = data[i + 2];
-                const a = data[i + 3];
-
-                // Check if pixel is non-black (has meaningful content)
-                // Use higher threshold to exclude dark edge artifacts and anti-aliasing noise
-                if (a > 0 && (r > threshold || g > threshold || b > threshold)) {
-                    foundContent = true;
-                    if (x < minX) minX = x;
-                    if (x > maxX) maxX = x;
-                    if (y < minY) minY = y;
-                    if (y > maxY) maxY = y;
-                }
-            }
-        }
-
-        if (!foundContent) return null;
-        return { minX, minY, maxX, maxY };
+        ctx.drawImage(tempCanvas, 0, 0);
     }
 
     // Draw foreground - yellow pixels get primary color, blue pixels get secondary color
-    // When toggle is 1, only show secondary color (hide primary)
-    function drawForeground(ctx, sx, sy, width, height, primaryColor, secondaryColor, toggle) {
+    // Smooth edge handling with proper antialiasing
+    function drawForeground(ctx, img, primaryColor, secondaryColor, toggle) {
         const tempCanvas = document.createElement('canvas');
-        tempCanvas.width = width;
-        tempCanvas.height = height;
+        const size = 256;
+        tempCanvas.width = size;
+        tempCanvas.height = size;
         const tempCtx = tempCanvas.getContext('2d');
 
-        tempCtx.drawImage(foregroundSprite, sx, sy, width, height, 0, 0, width, height);
-        const imageData = tempCtx.getImageData(0, 0, width, height);
+        // Enable image smoothing
+        tempCtx.imageSmoothingEnabled = true;
+        tempCtx.imageSmoothingQuality = 'high';
+        tempCtx.drawImage(img, 0, 0, size, size);
+
+        const imageData = tempCtx.getImageData(0, 0, size, size);
         const data = imageData.data;
-
-        // Find the actual bounds of the emblem content
-        const bounds = findEmblemBounds(imageData, width, height);
-        let emblemWidth = width;
-        let emblemHeight = height;
-        let offsetX = 0;
-        let offsetY = 0;
-
-        if (bounds) {
-            emblemWidth = bounds.maxX - bounds.minX + 1;
-            emblemHeight = bounds.maxY - bounds.minY + 1;
-            // Calculate centering offset
-            const emblemCenterX = bounds.minX + emblemWidth / 2;
-            const emblemCenterY = bounds.minY + emblemHeight / 2;
-            offsetX = (width / 2) - emblemCenterX;
-            offsetY = (height / 2) - emblemCenterY;
-        }
 
         for (let i = 0; i < data.length; i += 4) {
             const r = data[i];
@@ -242,73 +307,58 @@
             // Skip fully transparent pixels
             if (a === 0) continue;
 
-            // Skip black/near-black pixels (transparent background)
-            // Use higher threshold to clean up dark edge artifacts
-            if (r < 30 && g < 30 && b < 30) {
-                data[i + 3] = 0; // Make transparent
+            // Black/near-black pixels are transparent background
+            const brightness = (r + g + b) / 3;
+            if (brightness < 20) {
+                data[i + 3] = 0;
                 continue;
             }
 
-            // Yellow pixels (high R, high G, low B) -> Primary color (or transparent if toggled)
-            if (r > 150 && g > 150 && b < 100) {
-                if (toggle === 1) {
-                    // Hide primary color when toggled
+            // Foreground images use yellow (255,255,0) for primary and blue (0,0,255) for secondary
+            // Calculate how "yellow" vs "blue" this pixel is
+
+            // Yellow has high R and G, low B
+            // Blue has low R and G, high B
+            const yellowStrength = Math.min(r, g) / 255;
+            const blueStrength = b / 255;
+            const totalStrength = yellowStrength + blueStrength;
+
+            if (totalStrength < 0.05) {
+                // Very dark pixel - make transparent
+                data[i + 3] = 0;
+                continue;
+            }
+
+            // Normalize to get blend ratio
+            let primaryRatio = yellowStrength / Math.max(totalStrength, 0.001);
+            let secondaryRatio = blueStrength / Math.max(totalStrength, 0.001);
+
+            // Apply toggle (hide primary color layer)
+            if (toggle === 1) {
+                if (primaryRatio > 0.9) {
                     data[i + 3] = 0;
-                } else {
-                    const intensity = (r + g) / (255 * 2);
-                    data[i] = primaryColor.r * intensity;
-                    data[i + 1] = primaryColor.g * intensity;
-                    data[i + 2] = primaryColor.b * intensity;
-                    data[i + 3] = 255;
+                    continue;
                 }
+                primaryRatio = 0;
+                secondaryRatio = 1;
             }
-            // Blue pixels (low R, low G, high B) -> Secondary color
-            else if (b > 150 && r < 100 && g < 100) {
-                const intensity = b / 255;
-                data[i] = secondaryColor.r * intensity;
-                data[i + 1] = secondaryColor.g * intensity;
-                data[i + 2] = secondaryColor.b * intensity;
-                data[i + 3] = 255;
-            }
-            // Mixed/edge pixels - blend based on color channels
-            else {
-                const yellowIntensity = Math.min(r, g) / 255;
-                const blueIntensity = b / 255;
-                const total = yellowIntensity + blueIntensity;
 
-                if (total > 0) {
-                    if (toggle === 1) {
-                        // Only show secondary (blue) portion when toggled
-                        if (blueIntensity > 0.1) {
-                            data[i] = secondaryColor.r * blueIntensity;
-                            data[i + 1] = secondaryColor.g * blueIntensity;
-                            data[i + 2] = secondaryColor.b * blueIntensity;
-                            data[i + 3] = Math.floor(blueIntensity * 255);
-                        } else {
-                            data[i + 3] = 0;
-                        }
-                    } else {
-                        const yellowRatio = yellowIntensity / total;
-                        const blueRatio = blueIntensity / total;
+            // Calculate alpha based on total color strength for smooth edges
+            const alpha = Math.round(255 * smoothstep(0.1, 0.5, totalStrength));
 
-                        data[i] = (primaryColor.r * yellowRatio + secondaryColor.r * blueRatio) * (total / 1.5);
-                        data[i + 1] = (primaryColor.g * yellowRatio + secondaryColor.g * blueRatio) * (total / 1.5);
-                        data[i + 2] = (primaryColor.b * yellowRatio + secondaryColor.b * blueRatio) * (total / 1.5);
-                        data[i + 3] = 255;
-                    }
-                } else {
-                    data[i + 3] = 0; // Make transparent
-                }
-            }
+            // Blend primary and secondary colors
+            const finalR = primaryColor.r * primaryRatio + secondaryColor.r * secondaryRatio;
+            const finalG = primaryColor.g * primaryRatio + secondaryColor.g * secondaryRatio;
+            const finalB = primaryColor.b * primaryRatio + secondaryColor.b * secondaryRatio;
+
+            data[i] = Math.round(Math.min(255, finalR));
+            data[i + 1] = Math.round(Math.min(255, finalG));
+            data[i + 2] = Math.round(Math.min(255, finalB));
+            data[i + 3] = alpha;
         }
 
         tempCtx.putImageData(imageData, 0, 0);
-
-        // Apply centering offset when drawing to the output canvas
-        const scale = 256 / width;
-        const destOffsetX = offsetX * scale;
-        const destOffsetY = offsetY * scale;
-        ctx.drawImage(tempCanvas, 0, 0, width, height, destOffsetX, destOffsetY, 256, 256);
+        ctx.drawImage(tempCanvas, 0, 0);
     }
 
     window.downloadEmblem = function() {
@@ -320,52 +370,37 @@
     }
 
     // Parse URL parameters and set emblem values
+    // Parameters match halo2pc.com format:
+    // P=primary color, S=secondary color, EP=emblem primary, ES=emblem secondary
+    // EF=emblem foreground, EB=emblem background, ET=emblem toggle
     function applyUrlParameters() {
         const urlParams = new URLSearchParams(window.location.search);
 
-        // Map URL parameters to form elements
-        // EP = Emblem foreground design
-        // EB = Emblem background design
-        // EF = Emblem primary color (foreground color)
-        // ES = Emblem secondary color (or use S as fallback)
-        // ET = Emblem toggle
-        // P/S = Player primary/secondary colors from old system
+        const params = {
+            'EF': 'emblemForeground',
+            'EB': 'emblemBackground',
+            'EP': 'emblemPrimary',
+            'ES': 'emblemSecondary',
+            'P': 'bgPrimary',
+            'S': 'bgSecondary'
+        };
 
-        const emblemForeground = urlParams.get('EP');
-        const emblemBackground = urlParams.get('EB');
-        const emblemPrimaryColor = urlParams.get('EF');
-        const emblemSecondaryColor = urlParams.get('ES') || urlParams.get('S');
+        Object.entries(params).forEach(([param, elementId]) => {
+            const value = urlParams.get(param);
+            if (value !== null) {
+                const el = document.getElementById(elementId);
+                if (el) el.value = value;
+            }
+        });
+
         const emblemToggle = urlParams.get('ET');
-
-        if (emblemForeground !== null) {
-            const fgSelect = document.getElementById('emblemForeground');
-            if (fgSelect) fgSelect.value = emblemForeground;
-        }
-
-        if (emblemBackground !== null) {
-            const bgSelect = document.getElementById('emblemBackground');
-            if (bgSelect) bgSelect.value = emblemBackground;
-        }
-
-        if (emblemPrimaryColor !== null) {
-            const primarySelect = document.getElementById('emblemPrimary');
-            if (primarySelect) primarySelect.value = emblemPrimaryColor;
-        }
-
-        if (emblemSecondaryColor !== null) {
-            const secondarySelect = document.getElementById('emblemSecondary');
-            if (secondarySelect) secondarySelect.value = emblemSecondaryColor;
-        }
-
         if (emblemToggle !== null) {
             const toggleCheckbox = document.getElementById('emblemToggle');
             if (toggleCheckbox) toggleCheckbox.checked = (emblemToggle === '1');
         }
 
-        // If any emblem parameters were provided, switch to the emblem tab
-        if (emblemForeground !== null || emblemBackground !== null ||
-            emblemPrimaryColor !== null || emblemSecondaryColor !== null) {
-            // Wait a moment for the page to fully load, then switch to emblem tab
+        // Switch to emblem tab if parameters provided
+        if (urlParams.has('EF') || urlParams.has('EB') || urlParams.has('EP')) {
             setTimeout(() => {
                 if (typeof switchMainTab === 'function') {
                     switchMainTab('emblem');
@@ -374,14 +409,72 @@
         }
     }
 
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', () => {
-            applyUrlParameters();
-            loadSprites();
+    // Generate emblem URL with current settings
+    window.getEmblemUrl = function() {
+        const emblemForeground = document.getElementById('emblemForeground')?.value || 0;
+        const emblemBackground = document.getElementById('emblemBackground')?.value || 0;
+        const emblemPrimary = document.getElementById('emblemPrimary')?.value || 1;
+        const emblemSecondary = document.getElementById('emblemSecondary')?.value || 0;
+        const bgPrimary = document.getElementById('bgPrimary')?.value || 11;
+        const bgSecondary = document.getElementById('bgSecondary')?.value || 0;
+        const emblemToggle = document.getElementById('emblemToggle')?.checked ? 1 : 0;
+
+        const params = new URLSearchParams({
+            P: bgPrimary,
+            S: bgSecondary,
+            EP: emblemPrimary,
+            ES: emblemSecondary,
+            EF: emblemForeground,
+            EB: emblemBackground,
+            ET: emblemToggle
         });
-    } else {
+
+        return window.location.origin + window.location.pathname + '?' + params.toString();
+    }
+
+    // Copy emblem URL to clipboard
+    window.copyEmblemUrl = function() {
+        const url = getEmblemUrl();
+        navigator.clipboard.writeText(url).then(() => {
+            // Show brief feedback
+            const canvas = document.getElementById('emblemCanvas');
+            if (canvas) {
+                canvas.style.outline = '3px solid #00ff00';
+                setTimeout(() => {
+                    canvas.style.outline = '';
+                }, 500);
+            }
+        }).catch(err => {
+            console.error('Failed to copy URL:', err);
+            // Fallback: select text in a temporary input
+            const input = document.createElement('input');
+            input.value = url;
+            document.body.appendChild(input);
+            input.select();
+            document.execCommand('copy');
+            document.body.removeChild(input);
+        });
+    }
+
+    // Initialize everything when DOM is ready
+    function init() {
         applyUrlParameters();
-        loadSprites();
+        initColorPickers();
+        preloadImages();
+
+        // Add click-to-copy handler to emblem canvas
+        const canvas = document.getElementById('emblemCanvas');
+        if (canvas) {
+            canvas.style.cursor = 'pointer';
+            canvas.title = 'Click to copy emblem URL';
+            canvas.addEventListener('click', copyEmblemUrl);
+        }
+    }
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', init);
+    } else {
+        init();
     }
 
     // Re-render when emblem tab becomes visible
@@ -389,14 +482,15 @@
         mutations.forEach((mutation) => {
             if (mutation.type === 'attributes' && mutation.attributeName === 'style') {
                 const emblemTab = document.getElementById('main-tab-emblem');
-                if (emblemTab && emblemTab.style.display !== 'none' && spritesLoaded) {
+                if (emblemTab && emblemTab.style.display !== 'none') {
+                    // Re-init color pickers in case they weren't visible before
+                    initColorPickers();
                     updateEmblem();
                 }
             }
         });
     });
 
-    // Observe the emblem tab for visibility changes
     setTimeout(() => {
         const emblemTab = document.getElementById('main-tab-emblem');
         if (emblemTab) {
