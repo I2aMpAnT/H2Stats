@@ -2,40 +2,13 @@
   "match_1": {
     "game_1": {
       "map": "Midship",
-      "gametype": "MLG FFA 2007",
-      "game_type": "slayer",
-      "timestamp": "11/28/2025 7:42",
-      "duration": "00:29"
-    }
-  },
-  "match_2": {
-    "game_1": {
-      "map": "Midship",
-      "gametype": "MLG FFA 2007",
-      "game_type": "slayer",
-      "timestamp": "11/28/2025 19:13",
-      "duration": "15:00"
-    }
-  },
-  "match_3": {
-    "game_1": {
-      "map": "Midship",
-      "gametype": "MLG FFA 2007",
-      "game_type": "slayer",
-      "timestamp": "11/28/2025 19:29",
-      "duration": "14:03"
-    }
-  },
-  "match_4": {
-    "game_1": {
-      "map": "Midship",
       "gametype": "MLG CTF MidWar",
       "game_type": "capture_the_flag",
       "timestamp": "11/28/2025 20:03",
       "duration": "15:03"
     }
   },
-  "match_5": {
+  "match_2": {
     "game_1": {
       "map": "Beaver Creek",
       "gametype": "MLG TS 2007",
@@ -44,7 +17,7 @@
       "duration": "03:34"
     }
   },
-  "match_6": {
+  "match_3": {
     "game_1": {
       "map": "Lockout",
       "gametype": "MLG Ball 2007",
@@ -53,7 +26,7 @@
       "duration": "15:00"
     }
   },
-  "match_7": {
+  "match_4": {
     "game_1": {
       "map": "Warlock",
       "gametype": "MLG TS 2007",
@@ -62,7 +35,7 @@
       "duration": "04:39"
     }
   },
-  "match_8": {
+  "match_5": {
     "game_1": {
       "map": "Sanctuary",
       "gametype": "MLG CTF Sanc",
