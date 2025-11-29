@@ -1,6 +1,6 @@
 """
 twitch.py - Twitch Integration Module
-Manages player Twitch links and multi-stream URLs
+Manages player Twitch links, multi-stream URLs, and identity sync
 """
 
 import discord
@@ -10,8 +10,17 @@ from discord.ui import View, Button
 import json
 import os
 import re
+import io
 import logging
 from typing import Optional, List, Dict, Tuple
+
+# Optional imports for identity sync
+try:
+    import paramiko
+    import pandas as pd
+    IDENTITY_SYNC_AVAILABLE = True
+except ImportError:
+    IDENTITY_SYNC_AVAILABLE = False
 
 # Logging
 logger = logging.getLogger("twitch")
@@ -33,6 +42,11 @@ BLUE_TEAM_EMOJI_ID = None
 
 # Admin roles
 ADMIN_ROLES = ["Overlord", "Staff", "Server Support"]
+
+# Identity sync configuration
+STATS_SERVER_HOST = "104.207.143.249"
+STATS_SERVER_USER = "root"
+IDENTITY_PATH = "/home/carnagereport/stats/private/"
 
 # In-memory cache
 _PLAYERS_CACHE = None
@@ -450,7 +464,7 @@ def setup_twitch_commands(bot: commands.Bot):
         if not any(role in ADMIN_ROLES for role in user_roles):
             await interaction.response.send_message("❌ Admin only.", ephemeral=True)
             return
-        
+
         if remove_player_twitch(user.id):
             await interaction.response.defer()
         else:
@@ -458,5 +472,52 @@ def setup_twitch_commands(bot: commands.Bot):
                 f"❌ {user.display_name} has no Twitch linked.",
                 ephemeral=True
             )
-    
+
+    @bot.tree.command(name="syncidentity", description="[ADMIN] Sync player identities from stats server")
+    async def sync_identity_command(interaction: discord.Interaction):
+        """Admin: Sync identity files from stats server to update stats_profile mappings"""
+        # Check admin
+        user_roles = [role.name for role in interaction.user.roles]
+        if not any(role in ADMIN_ROLES for role in user_roles):
+            await interaction.response.send_message("❌ Admin only.", ephemeral=True)
+            return
+
+        # Check if sync is available
+        if not IDENTITY_SYNC_AVAILABLE:
+            await interaction.response.send_message(
+                "❌ Identity sync not available. Missing paramiko or pandas.",
+                ephemeral=True
+            )
+            return
+
+        await interaction.response.defer()
+
+        try:
+            # Import sync module
+            from sync_identity import sync_from_server
+
+            # Run sync
+            result = sync_from_server(STATS_SERVER_HOST, STATS_SERVER_USER)
+
+            if result >= 0:
+                # Clear cache to reload updated data
+                global _PLAYERS_CACHE
+                _PLAYERS_CACHE = None
+
+                await interaction.followup.send(
+                    f"✅ Identity sync complete. Updated {result} player profile(s).",
+                    ephemeral=True
+                )
+            else:
+                await interaction.followup.send(
+                    "❌ Failed to connect to stats server. Check logs for details.",
+                    ephemeral=True
+                )
+        except Exception as e:
+            logger.exception("Identity sync failed")
+            await interaction.followup.send(
+                f"❌ Sync failed: {str(e)}",
+                ephemeral=True
+            )
+
     logger.info("Twitch commands registered")

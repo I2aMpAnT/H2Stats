@@ -909,9 +909,13 @@ function truncateName(name, maxLen) {
 }
 
 function renderDetailedStats(game) {
-    const stats = game.stats;
+    const stats = game.detailed_stats;
     const players = game.players;
-    
+
+    if (!stats || stats.length === 0) {
+        return '<div class="no-data">No detailed stats available</div>';
+    }
+
     // Create player team map
     const playerTeams = {};
     players.forEach(p => {
@@ -919,12 +923,12 @@ function renderDetailedStats(game) {
             playerTeams[p.name] = p.team;
         }
     });
-    
+
     // Sort stats by team (Red first, then Blue)
     const sortedStats = [...stats].sort((a, b) => {
         const teamOrder = { 'Red': 0, 'Blue': 1 };
-        const teamA = teamOrder[playerTeams[a.Player]] !== undefined ? teamOrder[playerTeams[a.Player]] : 2;
-        const teamB = teamOrder[playerTeams[b.Player]] !== undefined ? teamOrder[playerTeams[b.Player]] : 2;
+        const teamA = teamOrder[playerTeams[a.player]] !== undefined ? teamOrder[playerTeams[a.player]] : 2;
+        const teamB = teamOrder[playerTeams[b.player]] !== undefined ? teamOrder[playerTeams[b.player]] : 2;
         return teamA - teamB;
     });
     
@@ -938,12 +942,12 @@ function renderDetailedStats(game) {
     html += '<tbody>';
     
     sortedStats.forEach(stat => {
-        const team = playerTeams[stat.Player];
+        const team = playerTeams[stat.player];
         const teamAttr = team ? `data-team="${team}"` : '';
         const timeAlive = formatTime(stat.total_time_alive || 0);
-        
+
         html += `<tr ${teamAttr}>`;
-        html += `<td><span class="player-with-rank">${getPlayerRankIcon(stat.Player, 'small')}<span>${stat.Player}</span></span></td>`;
+        html += `<td><span class="player-with-rank">${getPlayerRankIcon(stat.player, 'small')}<span>${stat.player}</span></span></td>`;
         html += `<td>${stat.kills}</td>`;
         html += `<td>${stat.assists}</td>`;
         html += `<td>${stat.deaths}</td>`;
@@ -993,10 +997,10 @@ function renderDetailedStats(game) {
         html += '</tr></thead><tbody>';
         
         sortedStats.forEach(stat => {
-            const team = playerTeams[stat.Player];
+            const team = playerTeams[stat.player];
             const teamAttr = team ? `data-team="${team}"` : '';
-            
-            html += `<tr ${teamAttr}><td><span class="player-with-rank">${getPlayerRankIcon(stat.Player, 'small')}<span>${stat.Player}</span></span></td>`;
+
+            html += `<tr ${teamAttr}><td><span class="player-with-rank">${getPlayerRankIcon(stat.player, 'small')}<span>${stat.player}</span></span></td>`;
             
             if (hasCTF) {
                 html += `<td>${stat.ctf_scores || 0}</td>`;
