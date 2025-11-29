@@ -26,7 +26,7 @@
         { r: 175, g: 144, b: 87,  code: '26E0', name: 'Tan' }
     ];
 
-    // Foreground emblem filenames (index matches sprite sheet order, left-to-right, top-to-bottom)
+    // Foreground emblem filenames (index matches halo2pc.com EF parameter)
     const foregroundFiles = [
         'Seventh Column.png',   // 0
         'Bullseye.png',         // 1
@@ -34,13 +34,13 @@
         'Halt.png',             // 3
         'Spartan.png',          // 4
         'Da Bomb.png',          // 5
-        'Phoenix.png',          // 6
-        'Champion.png',         // 7
-        'Jolly Roger.png',      // 8
-        'Sergeant.png',         // 9
-        'Drone.png',            // 10
-        'Delta.png',            // 11
-        'Helmet.png',           // 12
+        'Sergeant.png',         // 6
+        'Drone.png',            // 7
+        'Delta.png',            // 8
+        'Helmet.png',           // 9
+        'Phoenix.png',          // 10
+        'Champion.png',         // 11
+        'Jolly Roger.png',      // 12
         'Marathon.png',         // 13
         'Cube.png',             // 14
         'Cleave.png',           // 15
@@ -48,39 +48,39 @@
         'Radioactive.png',      // 17
         'Smiley.png',           // 18
         'Sol.png',              // 19
-        'Triad.png',            // 20
-        'Waypoint.png',         // 21
-        'Brute Head.png',       // 22
-        'Triplicate.png',       // 23
-        'Ying Yang.png',        // 24
-        'Trinity.png',          // 25
-        'Spearhead.png',        // 26
-        'Skull King.png',       // 27
-        'Trident.png',          // 28
-        'Subnova.png',          // 29
-        'Valkyrie.png',         // 30
-        'Spades.png',           // 31
-        'Clubs.png',            // 32
-        'Diamonds.png',         // 33
-        'Double Crescent.png',  // 34
-        'Hearts.png',           // 35
-        'Snake.png',            // 36
-        'Flaming Ninja.png',    // 37
-        'Rampancy.png',         // 38
-        'Hawk.png',             // 39
-        'Lips.png',             // 40
-        'Capsule.png',          // 41
-        'Race.png',             // 42
-        'Gas Mask.png',         // 43
-        'Grenade.png',          // 44
-        'Thor.png',             // 45
-        'Wasp.png',             // 46
-        'Mark of Shame.png',    // 47
+        'Frowney.png',          // 20
+        'Triad.png',            // 21
+        'Waypoint.png',         // 22
+        'Brute Head.png',       // 23
+        'Triplicate.png',       // 24
+        'Ying Yang.png',        // 25
+        'Trinity.png',          // 26
+        'Spearhead.png',        // 27
+        'Skull King.png',       // 28
+        'Trident.png',          // 29
+        'Subnova.png',          // 30
+        'Valkyrie.png',         // 31
+        'Spades.png',           // 32
+        'Clubs.png',            // 33
+        'Diamonds.png',         // 34
+        'Double Crescent.png',  // 35
+        'Hearts.png',           // 36
+        'Snake.png',            // 37
+        'Flaming Ninja.png',    // 38
+        'Rampancy.png',         // 39
+        'Hawk.png',             // 40
+        'Lips.png',             // 41
+        'Capsule.png',          // 42
+        'Race.png',             // 43
+        'Gas Mask.png',         // 44
+        'Grenade.png',          // 45
+        'Thor.png',             // 46
+        'Wasp.png',             // 47
         'Grunt Symbol.png',     // 48
-        'Runes.png',            // 49
-        'Grunt Head.png',       // 50
-        'Tsantsa.png',          // 51
-        'Frowney.png',          // 52
+        'Mark of Shame.png',    // 49
+        'Runes.png',            // 50
+        'Grunt Head.png',       // 51
+        'Tsantsa.png',          // 52
         'Cancel.png',           // 53
         'Number 0.png',         // 54
         'Number 1.png',         // 55
