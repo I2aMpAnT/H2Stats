@@ -383,13 +383,25 @@ function buildProfileNameMappings() {
     console.log('[MAPPINGS] Built mappings for', Object.keys(profileNameToDiscordId).length, 'in-game names');
 }
 
-// Get the display name for an in-game profile name (returns discord_name if mapped)
+// Get the display name for an in-game profile name
+// Priority: alias > discord_name > in-game name
 function getDisplayNameForProfile(inGameName) {
     const discordId = profileNameToDiscordId[inGameName];
     if (discordId && rankstatsData[discordId]) {
-        return rankstatsData[discordId].discord_name || inGameName;
+        const data = rankstatsData[discordId];
+        return data.alias || data.discord_name || inGameName;
     }
     return inGameName;
+}
+
+// Get the display name for a discord ID
+// Priority: alias > discord_name
+function getDisplayNameForDiscordId(discordId) {
+    if (rankstatsData[discordId]) {
+        const data = rankstatsData[discordId];
+        return data.alias || data.discord_name || 'Unknown';
+    }
+    return 'Unknown';
 }
 
 // Get the discord ID for an in-game profile name
@@ -1469,7 +1481,8 @@ function renderLeaderboard() {
 
         return {
             discordId: discordId,
-            displayName: data.discord_name || 'Unknown',
+            // Priority: alias > discord_name
+            displayName: data.alias || data.discord_name || 'Unknown',
             profileNames: profileNames,
             rank: data.rank || 1,
             wins: wins,
@@ -1604,15 +1617,20 @@ function setupPvpSearchBox(inputElement, resultsElement, playerNum) {
             });
         });
 
-        // Also search discord names in rankstatsData
+        // Also search by alias and discord names in rankstatsData
         Object.entries(rankstatsData).forEach(([discordId, data]) => {
+            const alias = data.alias || '';
             const discordName = data.discord_name || '';
-            if (discordName.toLowerCase().includes(query)) {
+            // Display name priority: alias > discord_name
+            const displayName = alias || discordName;
+
+            // Search matches alias OR discord_name
+            if (alias.toLowerCase().includes(query) || discordName.toLowerCase().includes(query)) {
                 const profileNames = discordIdToProfileNames[discordId] || [];
                 if (profileNames.length > 0) {
                     profileNames.forEach(profileName => {
                         if (!playerMatches.has(profileName)) {
-                            playerMatches.set(profileName, { profileName: profileName, discordName: discordName });
+                            playerMatches.set(profileName, { profileName: profileName, discordName: displayName });
                         }
                     });
                 }
@@ -1738,23 +1756,28 @@ function setupSearchBox(inputElement, resultsElement, boxNumber) {
             });
         });
 
-        // Also search discord names in rankstatsData
+        // Also search by alias and discord names in rankstatsData
         Object.entries(rankstatsData).forEach(([discordId, data]) => {
+            const alias = data.alias || '';
             const discordName = data.discord_name || '';
-            if (discordName.toLowerCase().includes(query)) {
+            // Display name priority: alias > discord_name
+            const displayName = alias || discordName;
+
+            // Search matches alias OR discord_name
+            if (alias.toLowerCase().includes(query) || discordName.toLowerCase().includes(query)) {
                 // Find associated profile names
                 const profileNames = discordIdToProfileNames[discordId] || [];
                 if (profileNames.length > 0) {
                     // Player has games - use their profile name for lookups
                     profileNames.forEach(profileName => {
                         if (!playerMatches.has(profileName)) {
-                            playerMatches.set(profileName, { profileName: profileName, discordName: discordName });
+                            playerMatches.set(profileName, { profileName: profileName, discordName: displayName });
                         }
                     });
                 } else {
-                    // Player has no games - use discord name as both
-                    if (!playerMatches.has(discordName)) {
-                        playerMatches.set(discordName, { profileName: discordName, discordName: discordName, noGames: true });
+                    // Player has no games - use display name as both
+                    if (!playerMatches.has(displayName)) {
+                        playerMatches.set(displayName, { profileName: displayName, discordName: displayName, noGames: true });
                     }
                 }
             }
