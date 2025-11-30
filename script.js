@@ -4,6 +4,15 @@ let gamesData = [];
 // Global player ranks (randomly assigned once)
 let playerRanks = {};
 
+// Full rankstats data from rankstats.json (keyed by discord ID)
+let rankstatsData = {};
+
+// Mapping from in-game profile names to discord IDs
+let profileNameToDiscordId = {};
+
+// Mapping from discord IDs to array of in-game profile names
+let discordIdToProfileNames = {};
+
 // Map images - local files from mapimages folder
 const mapImages = {
     'Midship': 'mapimages/Midship.jpeg',
@@ -236,6 +245,9 @@ async function loadPlayerRanks() {
         }
         const rankData = await response.json();
 
+        // Store full rankstats data for leaderboard
+        rankstatsData = rankData;
+
         // Process rank data - supports both formats:
         // Format 1 (playlist ranks): { "PlayerName": { "Team Slayer": 42, "MLG": 38 } }
         // Format 2 (legacy MMR): { "discordId": { "discord_name": "Name", "mmr": 900 } }
@@ -256,7 +268,7 @@ async function loadPlayerRanks() {
                 // Check for playlist-specific ranks (exclude all stat fields)
                 const excludedFields = ['xp', 'wins', 'losses', 'mmr', 'total_games', 'series_wins', 'series_losses',
                     'total_series', 'rank', 'highest_rank', 'kills', 'deaths', 'assists', 'headshots',
-                    'discord_name', 'twitch_name', 'twitch_url', 'alias'];
+                    'discord_name', 'twitch_name', 'twitch_url', 'alias', 'playlists'];
                 Object.keys(value).forEach(k => {
                     if (typeof value[k] === 'number' && !excludedFields.includes(k)) {
                         ranks[k] = value[k];
@@ -285,15 +297,131 @@ async function loadPlayerRanks() {
     }
 }
 
+// Build mappings between in-game profile names and discord IDs
+// This should be called after gamesData is loaded
+function buildProfileNameMappings() {
+    // Reset mappings
+    profileNameToDiscordId = {};
+    discordIdToProfileNames = {};
+
+    // First, collect all unique in-game names from gameshistory
+    const inGameNames = new Set();
+    gamesData.forEach(game => {
+        game.players.forEach(player => {
+            if (player.name) {
+                inGameNames.add(player.name);
+            }
+        });
+    });
+
+    // For each in-game name, try to find the matching discord ID in rankstats
+    // Matching is done by checking if the in-game name matches discord_name (case-insensitive)
+    // or if stats match (kills/deaths/etc - as a fallback for exact player matching)
+    inGameNames.forEach(inGameName => {
+        const inGameNameLower = inGameName.toLowerCase();
+
+        // Try to find a matching discord ID
+        for (const [discordId, data] of Object.entries(rankstatsData)) {
+            const discordName = (data.discord_name || '').toLowerCase();
+            const alias = (data.alias || '').toLowerCase();
+
+            // Check if in-game name matches discord_name or alias
+            if (inGameNameLower === discordName || inGameNameLower === alias) {
+                profileNameToDiscordId[inGameName] = discordId;
+                if (!discordIdToProfileNames[discordId]) {
+                    discordIdToProfileNames[discordId] = [];
+                }
+                if (!discordIdToProfileNames[discordId].includes(inGameName)) {
+                    discordIdToProfileNames[discordId].push(inGameName);
+                }
+                break;
+            }
+        }
+    });
+
+    // Also check by matching stats (kills, deaths, etc.) for players whose names don't directly match
+    // This handles cases like "KidMode" in-game -> "Prince KidMode" discord_name
+    // We aggregate stats per in-game name from gameshistory and compare to rankstats
+    const inGameStats = {};
+    gamesData.forEach(game => {
+        game.players.forEach(player => {
+            if (!player.name) return;
+            if (!inGameStats[player.name]) {
+                inGameStats[player.name] = { kills: 0, deaths: 0, assists: 0, games: 0 };
+            }
+            inGameStats[player.name].kills += player.kills || 0;
+            inGameStats[player.name].deaths += player.deaths || 0;
+            inGameStats[player.name].assists += player.assists || 0;
+            inGameStats[player.name].games += 1;
+        });
+    });
+
+    // For in-game names not yet mapped, try to match by stats
+    for (const [inGameName, stats] of Object.entries(inGameStats)) {
+        if (profileNameToDiscordId[inGameName]) continue; // Already mapped
+        if (stats.games === 0) continue;
+
+        // Find rankstats entry with matching stats
+        for (const [discordId, data] of Object.entries(rankstatsData)) {
+            if (data.total_games !== stats.games) continue;
+            if (data.kills !== stats.kills) continue;
+            if (data.deaths !== stats.deaths) continue;
+            if (data.assists !== stats.assists) continue;
+
+            // Stats match exactly - this is likely the same player
+            profileNameToDiscordId[inGameName] = discordId;
+            if (!discordIdToProfileNames[discordId]) {
+                discordIdToProfileNames[discordId] = [];
+            }
+            if (!discordIdToProfileNames[discordId].includes(inGameName)) {
+                discordIdToProfileNames[discordId].push(inGameName);
+            }
+            break;
+        }
+    }
+
+    console.log('[MAPPINGS] Built mappings for', Object.keys(profileNameToDiscordId).length, 'in-game names');
+}
+
+// Get the display name for an in-game profile name (returns discord_name if mapped)
+function getDisplayNameForProfile(inGameName) {
+    const discordId = profileNameToDiscordId[inGameName];
+    if (discordId && rankstatsData[discordId]) {
+        return rankstatsData[discordId].discord_name || inGameName;
+    }
+    return inGameName;
+}
+
+// Get the discord ID for an in-game profile name
+function getDiscordIdForProfile(inGameName) {
+    return profileNameToDiscordId[inGameName] || null;
+}
+
+// Get the rank for an in-game profile name (looks up via discord ID mapping)
+function getRankForProfile(inGameName) {
+    const discordId = profileNameToDiscordId[inGameName];
+    if (discordId && rankstatsData[discordId]) {
+        return rankstatsData[discordId].rank || 1;
+    }
+    // Fallback to old method
+    return playerRanks[inGameName] || 1;
+}
+
 // Get playlist ranks for a player
 function getPlayerPlaylistRanks(playerName) {
     return playerPlaylistRanks[playerName] || null;
 }
 
 // Get rank icon HTML for a player (only if they have a rank in rankstats.json)
+// Supports both in-game profile names and discord names
 function getPlayerRankIcon(playerName, size = 'small') {
-    const rank = playerRanks[playerName];
-    if (!rank) return '';
+    // First try to get rank via profile name mapping
+    let rank = getRankForProfile(playerName);
+    // Fallback to old method (direct lookup by discord_name/alias)
+    if (rank === 1) {
+        rank = playerRanks[playerName] || 1;
+    }
+    if (!rank || rank < 1) return '';
     const sizeClass = size === 'small' ? 'rank-icon-small' : 'rank-icon';
     return `<img src="https://r2-cdn.insignia.live/h2-rank/${rank}.png" alt="Rank ${rank}" class="${sizeClass}" />`;
 }
@@ -358,14 +486,18 @@ async function loadGamesData() {
         // Load player ranks from rankstats.json (supports playlist-based ranks)
         console.log('[DEBUG] Loading player ranks...');
         await loadPlayerRanks();
-        
+
+        // Build mappings between in-game names and discord IDs
+        console.log('[DEBUG] Building profile name mappings...');
+        buildProfileNameMappings();
+
         loadingArea.style.display = 'none';
         statsArea.style.display = 'block';
         mainHeader.classList.add('loaded');
-        
+
         console.log('[DEBUG] Rendering games list...');
         renderGamesList();
-        
+
         console.log('[DEBUG] Rendering leaderboard...');
         renderLeaderboard();
         
@@ -1316,49 +1448,47 @@ function renderTwitch(game) {
 function renderLeaderboard() {
     const leaderboardContainer = document.getElementById('leaderboardContainer');
     if (!leaderboardContainer) return;
-    
-    if (gamesData.length === 0) {
+
+    // Build leaderboard from rankstatsData (includes ALL players, even with 0 games)
+    if (Object.keys(rankstatsData).length === 0) {
         leaderboardContainer.innerHTML = '<div class="loading-message">No leaderboard data available</div>';
         return;
     }
-    
-    const playerStats = {};
-    
-    gamesData.forEach(game => {
-        game.players.forEach(player => {
-            if (!playerStats[player.name]) {
-                playerStats[player.name] = {
-                    name: player.name,
-                    games: 0,
-                    kills: 0,
-                    deaths: 0,
-                    assists: 0,
-                    wins: 0
-                };
-            }
-            
-            const stats = playerStats[player.name];
-            stats.games++;
-            stats.kills += player.kills || 0;
-            stats.deaths += player.deaths || 0;
-            stats.assists += player.assists || 0;
-            
-            if (player.place === '1st') {
-                stats.wins++;
-            }
-        });
+
+    // Convert rankstatsData to array format for sorting
+    const players = Object.entries(rankstatsData).map(([discordId, data]) => {
+        // Get profile names (in-game names) for this discord ID
+        const profileNames = discordIdToProfileNames[discordId] || [];
+
+        // Use stats directly from rankstats (already aggregated by backend)
+        const kills = data.kills || 0;
+        const deaths = data.deaths || 0;
+        const wins = data.wins || 0;
+        const losses = data.losses || 0;
+        const games = data.total_games || 0;
+
+        return {
+            discordId: discordId,
+            displayName: data.discord_name || 'Unknown',
+            profileNames: profileNames,
+            rank: data.rank || 1,
+            wins: wins,
+            losses: losses,
+            games: games,
+            kills: kills,
+            deaths: deaths,
+            kd: deaths > 0 ? (kills / deaths).toFixed(2) : kills.toFixed(2),
+            winrate: games > 0 ? ((wins / games) * 100).toFixed(1) : '0.0'
+        };
     });
-    
-    const players = Object.values(playerStats).map(p => {
-        p.kd = p.deaths > 0 ? (p.kills / p.deaths).toFixed(2) : p.kills.toFixed(2);
-        p.winrate = p.games > 0 ? ((p.wins / p.games) * 100).toFixed(1) : '0.0';
-        p.rank = playerRanks[p.name] || 1;
-        return p;
+
+    // Sort by rank descending (50 at top, 1 at bottom), then by wins, then by K/D
+    players.sort((a, b) => {
+        if (b.rank !== a.rank) return b.rank - a.rank;
+        if (b.wins !== a.wins) return b.wins - a.wins;
+        return parseFloat(b.kd) - parseFloat(a.kd);
     });
-    
-    // Sort by rank descending (50 at top, 1 at bottom)
-    players.sort((a, b) => b.rank - a.rank);
-    
+
     let html = '<div class="leaderboard">';
     html += '<div class="leaderboard-header">';
     html += '<div>Rank</div>';
@@ -1366,18 +1496,21 @@ function renderLeaderboard() {
     html += '<div>Record</div>';
     html += '<div>K/D</div>';
     html += '</div>';
-    
+
     players.forEach((player) => {
         const rankIconUrl = `https://r2-cdn.insignia.live/h2-rank/${player.rank}.png`;
-        
-        html += '<div class="leaderboard-row clickable-player" data-player="' + player.name + '">';
+        // Use first profile name for data-player attribute (for game history lookups)
+        // If no profile names, use discord name as fallback
+        const playerDataAttr = player.profileNames.length > 0 ? player.profileNames[0] : player.displayName;
+
+        html += '<div class="leaderboard-row clickable-player" data-player="' + playerDataAttr + '" data-discord-id="' + player.discordId + '">';
         html += `<div class="lb-rank"><img src="${rankIconUrl}" alt="Rank ${player.rank}" class="rank-icon" /></div>`;
-        html += `<div class="lb-player">${player.name}</div>`;
-        html += `<div class="lb-record">${player.wins}-${player.games - player.wins} (${player.winrate}%)</div>`;
+        html += `<div class="lb-player">${player.displayName}</div>`;
+        html += `<div class="lb-record">${player.wins}-${player.losses} (${player.winrate}%)</div>`;
         html += `<div class="lb-kd">${player.kd}</div>`;
         html += '</div>';
     });
-    
+
     html += '</div>';
     leaderboardContainer.innerHTML = html;
 }
@@ -1445,39 +1578,57 @@ function initializeSearch() {
 function setupPvpSearchBox(inputElement, resultsElement, playerNum) {
     inputElement.addEventListener('input', function(e) {
         const query = e.target.value.toLowerCase().trim();
-        
+
         if (query.length < 2) {
             resultsElement.classList.remove('active');
             return;
         }
-        
+
         // Check if games data is loaded
         if (!gamesData || gamesData.length === 0) {
             resultsElement.innerHTML = '<div class="search-result-item">Loading game data...</div>';
             resultsElement.classList.add('active');
             return;
         }
-        
+
         const results = [];
-        const playerNames = new Set();
-        
+        const playerMatches = new Map();
+
+        // Search in-game names from gamesData
         gamesData.forEach(game => {
             game.players.forEach(player => {
                 if (player.name.toLowerCase().includes(query)) {
-                    playerNames.add(player.name);
+                    const discordName = getDisplayNameForProfile(player.name);
+                    playerMatches.set(player.name, { profileName: player.name, discordName: discordName });
                 }
             });
         });
-        
-        playerNames.forEach(name => {
-            const playerStats = calculatePlayerSearchStats(name);
+
+        // Also search discord names in rankstatsData
+        Object.entries(rankstatsData).forEach(([discordId, data]) => {
+            const discordName = data.discord_name || '';
+            if (discordName.toLowerCase().includes(query)) {
+                const profileNames = discordIdToProfileNames[discordId] || [];
+                if (profileNames.length > 0) {
+                    profileNames.forEach(profileName => {
+                        if (!playerMatches.has(profileName)) {
+                            playerMatches.set(profileName, { profileName: profileName, discordName: discordName });
+                        }
+                    });
+                }
+            }
+        });
+
+        playerMatches.forEach(({ profileName, discordName }) => {
+            const playerStats = calculatePlayerSearchStats(profileName);
             results.push({
                 type: 'player',
-                name: name,
+                name: profileName,
+                displayName: discordName,
                 meta: `${playerStats.games} games · ${playerStats.kd} K/D`
             });
         });
-        
+
         displayPvpSearchResults(results, resultsElement, playerNum);
     });
 }
@@ -1488,15 +1639,15 @@ function displayPvpSearchResults(results, resultsElement, playerNum) {
         resultsElement.classList.add('active');
         return;
     }
-    
+
     let html = '';
     results.slice(0, 10).forEach(result => {
         html += `<div class="search-result-item" onclick="selectPvpPlayer(${playerNum}, '${escapeHtml(result.name)}')">`;
-        html += `<div class="search-result-name">${result.name}</div>`;
+        html += `<div class="search-result-name">${result.displayName || result.name}</div>`;
         html += `<div class="search-result-meta">${result.meta}</div>`;
         html += `</div>`;
     });
-    
+
     resultsElement.innerHTML = html;
     resultsElement.classList.add('active');
 }
@@ -1574,21 +1725,47 @@ function setupSearchBox(inputElement, resultsElement, boxNumber) {
         
         const results = [];
         
-        // Search for players
-        const playerNames = new Set();
+        // Search for players - by both in-game name and discord name
+        const playerMatches = new Map(); // Map of profileName -> {profileName, discordName}
+
+        // First, search in-game names from gamesData
         gamesData.forEach(game => {
             game.players.forEach(player => {
                 if (player.name.toLowerCase().includes(query)) {
-                    playerNames.add(player.name);
+                    const discordName = getDisplayNameForProfile(player.name);
+                    playerMatches.set(player.name, { profileName: player.name, discordName: discordName });
                 }
             });
         });
-        
-        playerNames.forEach(name => {
-            const playerStats = calculatePlayerSearchStats(name);
+
+        // Also search discord names in rankstatsData
+        Object.entries(rankstatsData).forEach(([discordId, data]) => {
+            const discordName = data.discord_name || '';
+            if (discordName.toLowerCase().includes(query)) {
+                // Find associated profile names
+                const profileNames = discordIdToProfileNames[discordId] || [];
+                if (profileNames.length > 0) {
+                    // Player has games - use their profile name for lookups
+                    profileNames.forEach(profileName => {
+                        if (!playerMatches.has(profileName)) {
+                            playerMatches.set(profileName, { profileName: profileName, discordName: discordName });
+                        }
+                    });
+                } else {
+                    // Player has no games - use discord name as both
+                    if (!playerMatches.has(discordName)) {
+                        playerMatches.set(discordName, { profileName: discordName, discordName: discordName, noGames: true });
+                    }
+                }
+            }
+        });
+
+        playerMatches.forEach(({ profileName, discordName, noGames }) => {
+            const playerStats = noGames ? { games: 0, wins: 0, kd: '0.00' } : calculatePlayerSearchStats(profileName);
             results.push({
                 type: 'player',
-                name: name,
+                name: profileName,
+                displayName: discordName,
                 meta: `${playerStats.games} games · ${playerStats.wins}W-${playerStats.games - playerStats.wins}L · ${playerStats.kd} K/D`
             });
         });
@@ -1741,6 +1918,9 @@ function displaySearchResults(results, resultsElement, boxNumber) {
             }
             html += `<div class="search-result-type">${result.type}</div>`;
             html += `<div class="search-result-name">${result.name.charAt(0).toUpperCase() + result.name.slice(1)}</div>`;
+        } else if (result.type === 'player') {
+            html += `<div class="search-result-type">${result.type}</div>`;
+            html += `<div class="search-result-name">${result.displayName || result.name}</div>`;
         } else {
             html += `<div class="search-result-type">${result.type}</div>`;
             html += `<div class="search-result-name">${result.name}</div>`;
@@ -3175,26 +3355,29 @@ function closeKillsBreakdown() {
 function openPlayerProfile(playerName) {
     currentProfilePlayer = playerName;
     currentWinLossFilter = 'all'; // Reset filter
-    
+
     // Hide other sections
     document.getElementById('statsArea').style.display = 'none';
     document.getElementById('searchResultsPage').style.display = 'none';
     document.getElementById('playerProfilePage').style.display = 'block';
-    
+
+    // Get the display name (discord nickname) for the player
+    const displayName = getDisplayNameForProfile(playerName);
+
     // Set player name and rank
-    document.getElementById('profilePlayerName').textContent = playerName;
+    document.getElementById('profilePlayerName').textContent = displayName;
     document.getElementById('profileRankIcon').innerHTML = getPlayerRankIcon(playerName, 'large');
-    
+
     // Calculate overall stats
     const stats = calculatePlayerOverallStats(playerName);
     renderProfileStats(stats);
-    
+
     // Get player's games
     currentProfileGames = getPlayerGames(playerName);
-    
+
     // Populate filter dropdowns
     populateProfileFilters();
-    
+
     // Render games list
     renderProfileGames(currentProfileGames);
 }
